@@ -205,11 +205,33 @@ async function loadRestos() {
     return;
   }
 
-  grid.innerHTML = list.map(r => `
+  const SVG_MAP = {
+    burger:   'Hamburger-bro.svg',
+    pizza:    'Pizza_sharing-bro.svg',
+    ramen:    'Ramen-amico.svg',
+    sushi:    'Poke_bowl-rafiki.svg',
+    seafood:  'Poke_bowl-rafiki.svg',
+    healthy:  'fruit_salad-pana.svg',
+    chilena:  'fruit_salad-pana.svg',
+    coffee:   'fruit_salad-pana.svg',
+    parrilla: 'Hamburger-bro.svg',
+    bar:      'fruit_salad-pana.svg',
+  };
+  const BG_MAP = {
+    burger:   '#FFF3ED', pizza: '#FFF8E6', ramen: '#FFF8E6',
+    sushi:    '#E6F9F3', seafood: '#E8F4FF', healthy: '#E6F9F3',
+    chilena:  '#FFF5E6', coffee: '#FFF8E6', parrilla: '#FFF3ED', bar: '#F5F0FF',
+  };
+
+  grid.innerHTML = list.map(r => {
+    const slug = r.categories?.slug || 'burger';
+    const svg  = SVG_MAP[slug] || 'fruit_salad-pana.svg';
+    const bg   = BG_MAP[slug]  || '#FFF3ED';
+    return `
     <div class="card" style="cursor:pointer" onclick="location.href='restaurante.html?id=${r.id}'">
-      <div class="${r.ri_class||'ri-bur'}" style="height:140px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;">
-        ${r.badge_label ? `<span class="pill pill-green" style="position:absolute;top:10px;left:10px">${r.badge_label}</span>` : ''}
-        <span>${r.icon||'🍽️'}</span>
+      <div style="height:160px;background:${bg};position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;border-radius:var(--rlg) var(--rlg) 0 0;">
+        ${r.badge_label ? `<span class="pill pill-green" style="position:absolute;top:10px;left:10px;z-index:2">${r.badge_label}</span>` : ''}
+        <img src="${svg}" alt="${r.name}" style="height:148px;width:100%;object-fit:contain;padding:8px 16px;">
       </div>
       <div style="padding:14px 16px 18px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
@@ -219,8 +241,10 @@ async function loadRestos() {
         <div style="font-size:12px;color:var(--ink3);margin-bottom:8px">
           📍 ${r.comunas?.name||''} · ${'$'.repeat(r.price_level||2)} · ${r.delivery?'🛵 Delivery':'🪑 Solo local'}
         </div>
+        ${r.categories?.name ? `<span class="pill" style="background:var(--bg);color:var(--ink2);border:1px solid var(--border);font-size:11px">${r.categories.name}</span>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Stats
   document.getElementById('st-total').textContent = list.length;
