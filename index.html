@@ -134,6 +134,7 @@ document.getElementById('user-av').textContent = initials;
 let currentCat = 'all';
 let currentComuna = 'all';
 let searchTimer = null;
+let categoryMap = {}; // slug -> id
 
 const CATEGORIES = [
   {id:'all',icon:'🍽️',label:'Todos'},
@@ -147,6 +148,12 @@ const CATEGORIES = [
   {id:'chilena',icon:'🫕',label:'Chilena'},
   {id:'parrilla',icon:'🥩',label:'Parrilla'},
 ];
+
+// Precargar mapa de categorías al inicio
+async function loadCategoryMap() {
+  const { data } = await sb.from('categories').select('id, slug');
+  if (data) data.forEach(c => { categoryMap[c.slug] = c.id; });
+}
 
 // ── Render categorías ─────────────────────────────────────────────────────────
 function renderCats() {
@@ -175,19 +182,15 @@ async function loadRestos() {
 
   const search = document.getElementById('search-input').value.trim();
 
-  // Obtener category_id si hay filtro de categoría
-  let categoryId = null;
-  if (currentCat !== 'all') {
-    const { data: catData } = await sb.from('categories').select('id').eq('slug', currentCat).single();
-    categoryId = catData?.id;
-  }
-
   let q = sb.from('restaurants')
     .select('*, categories(slug,icon,name), comunas(name)')
     .eq('is_active', true)
     .limit(40);
 
-  if (categoryId) q = q.eq('category_id', categoryId);
+  // Usar mapa precargado para filtrar por categoría
+  if (currentCat !== 'all' && categoryMap[currentCat]) {
+    q = q.eq('category_id', categoryMap[currentCat]);
+  }
   if (currentComuna !== 'all') q = q.eq('comuna_id', currentComuna);
   if (search) q = q.ilike('name', `%${search}%`);
 
@@ -240,6 +243,7 @@ window.onSearch = () => {
 window.resetFilters = () => { currentCat='all'; currentComuna='all'; renderCats(); renderComunas(); loadRestos(); };
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+await loadCategoryMap();
 renderCats();
 renderComunas();
 loadRestos();
