@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EasyFood — Reseñas</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.page-content { padding-bottom:80px; }
+.revhero { background:var(--ink);padding:56px 20px 32px;position:relative;overflow:hidden; }
+@media(min-width:768px){ .revhero{padding:40px 40px 32px;} }
+.rblob { position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:var(--purple);opacity:.18; }
+.revtitle { font-family:'Syne',sans-serif;font-size:clamp(26px,6vw,38px);color:#fff;letter-spacing:-1px;margin-bottom:6px;position:relative;z-index:1; }
+.revtitle span { color:var(--yellow); }
+.revsub { font-size:13px;color:rgba(255,255,255,.5);position:relative;z-index:1;margin-bottom:4px; }
+
+.rbox { margin:20px;background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:20px;display:flex;gap:24px;align-items:center;box-shadow:var(--sh-sm); }
+@media(min-width:768px){ .rbox{margin:24px 40px;} }
+.bignum { font-family:'Syne',sans-serif;font-size:52px;color:var(--brand);line-height:1; }
+.bar-track { flex:1;height:7px;background:var(--bg2);border-radius:4px;overflow:hidden; }
+.bar-fill  { height:100%;background:var(--brand);border-radius:4px; }
+
+.rev-filters { padding:0 20px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none; }
+.rev-filters::-webkit-scrollbar { display:none; }
+@media(min-width:768px){ .rev-filters{padding:0 40px 20px;} }
+
+.revbody { padding:0 20px; }
+@media(min-width:768px){ .revbody{padding:0 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;} }
+
+.rcard { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:18px;margin-bottom:14px;transition:box-shadow .18s; }
+@media(min-width:768px){ .rcard{margin-bottom:0;} }
+.rcard:hover { box-shadow:var(--sh-md); }
+.rhdr { display:flex;align-items:center;gap:12px;margin-bottom:10px; }
+.rtxt { font-size:14px;color:var(--ink2);line-height:1.65;margin-bottom:12px; }
+.ract { display:flex;gap:8px; }
+.btnh { font-size:12px;font-weight:600;font-family:inherit;color:var(--ink2);background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s; }
+.btnh:hover { background:var(--brand-bg);color:var(--brand);border-color:var(--brand); }
+.resto-tag { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--border);cursor:pointer;color:var(--ink2);margin-top:8px;text-decoration:none; }
+.resto-tag:hover { color:var(--brand); }
+/* Skeleton */
+.skeleton { background:linear-gradient(90deg,var(--bg) 25%,var(--border) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--rlg);height:160px; }
+@keyframes shimmer { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+</style>
+</head>
+<body>
+
+<aside class="sidebar hide-mobile">
+  <div class="sb-brand"><div class="sb-logo">🍽️</div><span class="sb-name">EasyFood</span></div>
+  <a class="sl" href="index.html"><span class="ic">🏠</span> Inicio</a>
+  <a class="sl" href="mapa.html"><span class="ic">🗺️</span> Mapa</a>
+  <a class="sl active" href="resenas.html"><span class="ic">⭐</span> Reseñas</a>
+  <a class="sl sl-space" href="perfil.html"><span class="ic">👤</span> Mi Perfil</a>
+</aside>
+
+<main class="main-with-sidebar page-content">
+
+  <div class="revhero">
+    <div class="rblob"></div>
+    <div style="position:relative;z-index:1;margin-bottom:16px">
+      <a href="index.html" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">← Inicio</a>
+    </div>
+    <h1 class="revtitle">Lo que opina<br><span>Santiago</span></h1>
+    <p class="revsub">Reseñas verificadas de usuarios reales</p>
+  </div>
+
+  <!-- Rating global -->
+  <div class="rbox" id="rbox">
+    <div>
+      <div class="bignum" id="avg-global">…</div>
+      <div style="color:var(--brand);font-size:18px;margin:6px 0 4px" id="stars-global"></div>
+      <div style="font-size:12px;color:var(--ink3);font-weight:500" id="count-global">… reseñas</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px" id="bars-global"></div>
+  </div>
+
+  <!-- Filtros categoría -->
+  <div class="rev-filters" id="rev-filters"></div>
+
+  <!-- Grid reseñas -->
+  <div class="revbody" id="rev-grid">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+
+</main>
+
+<!-- FAB escribir reseña -->
+<button class="fab" onclick="window.location.href='index.html'">✏️ Escribir reseña</button>
+
+<nav class="bnav">
+  <a class="ni" href="index.html"><span class="ni-icon">🏠</span><span>Inicio</span></a>
+  <a class="ni" href="mapa.html"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
+  <a class="ni active" href="resenas.html"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
+  <a class="ni" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
+</nav>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Auth check
+const { data:{ session } } = await sb.auth.getSession();
+if (!session) { location.href='login.html'; }
+
+const CATEGORIES = [
+  {id:'all',icon:'🍽️',label:'Todos'},
+  {id:'burger',icon:'🍔',label:'Burger'},
+  {id:'pizza',icon:'🍕',label:'Pizza'},
+  {id:'ramen',icon:'🍜',label:'Ramen'},
+  {id:'sushi',icon:'🍣',label:'Sushi'},
+  {id:'healthy',icon:'🥗',label:'Sano'},
+  {id:'coffee',icon:'☕',label:'Café'},
+  {id:'seafood',icon:'🦞',label:'Mariscos'},
+  {id:'chilena',icon:'🫕',label:'Chilena'},
+  {id:'parrilla',icon:'🥩',label:'Parrilla'},
+];
+
+let activeFilter = 'all';
+
+// ── Filtros ───────────────────────────────────────────────────────────────────
+function renderFilters() {
+  document.getElementById('rev-filters').innerHTML = CATEGORIES.map(c => `
+    <div class="chip ${c.id===activeFilter?'sel':''}" onclick="window._setFilter('${c.id}')">
+      ${c.icon} ${c.label}
+    </div>`).join('');
+}
+window._setFilter = (id) => { activeFilter=id; renderFilters(); loadReviews(); };
+
+// ── Stats globales ────────────────────────────────────────────────────────────
+async function loadStats() {
+  const { data } = await sb.from('reviews').select('rating');
+  const ratings = data?.map(r=>r.rating)||[];
+  const total = ratings.length;
+  const avg = total ? (ratings.reduce((a,b)=>a+b,0)/total).toFixed(1) : '—';
+  document.getElementById('avg-global').textContent = avg;
+  document.getElementById('stars-global').textContent = avg!=='—' ? '★'.repeat(Math.round(+avg)) : '';
+  document.getElementById('count-global').textContent = `${total} reseñas`;
+  const bars = [5,4,3,2,1].map(n => {
+    const c = ratings.filter(r=>r===n).length;
+    const p = total ? Math.round(c/total*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink3);font-weight:600">
+      <span>${n}★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%"></div></div>
+      <span>${p}%</span>
+    </div>`;
+  });
+  document.getElementById('bars-global').innerHTML = bars.join('');
+}
+
+// ── Reseñas ───────────────────────────────────────────────────────────────────
+async function loadReviews() {
+  document.getElementById('rev-grid').innerHTML =
+    '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+
+  let q = sb.from('reviews')
+    .select('*, profiles(name), restaurants(id, name, icon, category_id, categories(slug))')
+    .order('created_at', {ascending: false})
+    .limit(50);
+
+  const { data: reviews } = await q;
+
+  let list = reviews || [];
+  if (activeFilter !== 'all') {
+    list = list.filter(r => r.restaurants?.categories?.slug === activeFilter);
+  }
+
+  const grid = document.getElementById('rev-grid');
+  if (!list.length) {
+    grid.innerHTML = '<p style="color:var(--ink3);text-align:center;padding:40px;grid-column:1/-1">No hay reseñas en esta categoría aún.</p>';
+    return;
+  }
+
+  grid.innerHTML = list.map(r => {
+    const nombre = r.profiles?.name || 'Usuario';
+    const ini = nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const fecha = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
+    const resto = r.restaurants;
+    return `
+    <div class="rcard">
+      <div class="rhdr">
+        <div class="avatar av-md av-a">${ini}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${nombre}</div>
+          <div style="font-size:12px;color:var(--ink3)">${fecha}</div>
+        </div>
+        <div style="color:var(--brand)">${'★'.repeat(r.rating)}</div>
+      </div>
+      <p class="rtxt">${r.text}</p>
+      ${resto ? `<a class="resto-tag" href="restaurante.html?id=${resto.id}">${resto.icon||'🍽️'} ${resto.name}</a>` : ''}
+      <div class="ract" style="margin-top:10px">
+        <button class="btnh">👍 Útil (${r.useful_count||0})</button>
+        <button class="btnh" onclick="navigator.clipboard?.writeText(location.href);alert('Link copiado')">Compartir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+renderFilters();
+loadStats();
+loadReviews();
+</script>
+</body>
+</html>
