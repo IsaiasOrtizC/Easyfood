@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EasyFood — Restaurante</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="shared.css">
+<style>
+.page-content { padding-bottom:80px; }
+.rhero { background:var(--ink);padding:56px 20px 32px;position:relative;overflow:hidden; }
+@media(min-width:768px){ .rhero{padding:40px 40px 32px;} }
+.rh-blob { position:absolute;top:-50px;right:-50px;width:250px;height:250px;border-radius:50%;opacity:.18; }
+.rh-top { display:flex;align-items:center;gap:12px;margin-bottom:24px;position:relative;z-index:1; }
+.rh-ico-big { width:72px;height:72px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0; }
+.rh-info { flex:1; }
+.rh-name { font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,30px);color:#fff;letter-spacing:-.8px;margin-bottom:4px; }
+.rh-sub  { font-size:13px;color:rgba(255,255,255,.55);line-height:1.5; }
+.rh-row { display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1; }
+.rh-stat { background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:10px 16px;text-align:center;flex:1;min-width:80px; }
+.rh-stat .n { font-family:'Syne',sans-serif;font-size:20px;color:#fff; }
+.rh-stat .l { font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+.actions-bar { display:flex;gap:10px;padding:16px 20px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border-bottom:1px solid var(--border); }
+.actions-bar::-webkit-scrollbar { display:none; }
+.act-btn { flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;border-radius:var(--rsm);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:11px;font-weight:600;color:var(--ink2);transition:all .15s;font-family:inherit; }
+.act-btn:hover { border-color:var(--brand);color:var(--brand); }
+.act-btn .act-ico { font-size:20px; }
+.rbody { padding:20px; }
+@media(min-width:768px){ .rbody{padding:28px 40px;display:grid;grid-template-columns:1fr 360px;gap:32px;} }
+.info-card { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:20px;margin-bottom:20px; }
+.info-row { display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border); }
+.info-row:last-child { border-bottom:none; }
+.info-ico { font-size:18px;width:24px;text-align:center;flex-shrink:0; }
+.info-text { font-size:14px;color:var(--ink2);flex:1; }
+.rating-box { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:20px;margin-bottom:20px; }
+.big-rating { display:flex;gap:20px;align-items:center;margin-bottom:16px; }
+.big-num { font-family:'Syne',sans-serif;font-size:52px;color:var(--brand);line-height:1; }
+.rev-grid { display:flex;flex-direction:column;gap:14px; }
+.rcard { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:18px;transition:box-shadow .18s; }
+.rcard:hover { box-shadow:var(--sh-md); }
+.rhdr { display:flex;align-items:center;gap:12px;margin-bottom:10px; }
+.rtxt { font-size:14px;color:var(--ink2);line-height:1.65;margin-bottom:12px; }
+.ract { display:flex;gap:8px; }
+.btnh { font-size:12px;font-weight:600;font-family:inherit;color:var(--ink2);background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s; }
+.btnh:hover { background:var(--brand-bg);color:var(--brand);border-color:var(--brand); }
+.review-form { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:22px;margin-bottom:20px; }
+.star-picker { display:flex;gap:6px;margin-bottom:16px; }
+.sp { font-size:32px;cursor:pointer;transition:transform .15s;filter:grayscale(1);opacity:.4; }
+.sp.lit { filter:none;opacity:1; }
+.bar-track { flex:1;height:7px;background:var(--bg2);border-radius:4px;overflow:hidden; }
+.bar-fill  { height:100%;background:var(--brand);border-radius:4px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar hide-mobile">
+  <div class="sb-brand"><div class="sb-logo">🍽️</div><span class="sb-name">EasyFood</span></div>
+  <a class="sl active" href="index.html"><span class="ic">🏠</span> Inicio</a>
+  <a class="sl" href="mapa.html"><span class="ic">🗺️</span> Mapa</a>
+  <a class="sl" href="resenas.html"><span class="ic">⭐</span> Reseñas</a>
+  <a class="sl sl-space" href="perfil.html"><span class="ic">👤</span> Mi Perfil</a>
+</aside>
+
+<div class="main-with-sidebar page-content">
+  <div class="rhero" id="rhero">
+    <div class="rh-blob" id="rh-blob" style="background:var(--brand)"></div>
+    <div style="position:relative;z-index:1">
+      <div style="margin-bottom:16px">
+        <a href="index.html" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">← Volver</a>
+      </div>
+      <div class="rh-top">
+        <div class="rh-ico-big" id="rh-ico">🍽️</div>
+        <div class="rh-info">
+          <div class="rh-name" id="rh-name">Cargando…</div>
+          <div class="rh-sub"  id="rh-sub"></div>
+        </div>
+      </div>
+      <div class="rh-row" id="rh-stats"></div>
+    </div>
+  </div>
+
+  <div class="actions-bar" id="actions-bar"></div>
+
+  <div class="rbody">
+    <div>
+      <div class="info-card" id="info-card"><div style="color:var(--ink3);text-align:center;padding:20px">Cargando…</div></div>
+
+      <div class="review-form" id="review-form" style="display:none">
+        <h3 style="font-family:'Syne',sans-serif;font-size:18px;letter-spacing:-.3px;margin-bottom:16px">✏️ Escribe una reseña</h3>
+        <div class="star-picker" id="star-picker"></div>
+        <div class="input-group" style="margin-bottom:12px">
+          <textarea class="input" id="rev-text" rows="3" placeholder="¿Cómo fue tu experiencia? (mín. 20 caracteres)" style="resize:none"></textarea>
+        </div>
+        <div id="rev-error" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
+        <button class="btn btn-primary" id="btn-review" onclick="window._submitReview()">Publicar reseña</button>
+      </div>
+
+      <div class="sechdr" style="margin-top:4px">
+        <h2>Reseñas</h2>
+        <span id="rev-count" style="font-size:13px;color:var(--ink3)"></span>
+      </div>
+      <div class="rev-grid" id="rev-grid"><div style="color:var(--ink3);text-align:center;padding:20px">Cargando reseñas…</div></div>
+    </div>
+
+    <div>
+      <div class="rating-box" id="rating-box"></div>
+      <div class="info-card" style="padding:0;overflow:hidden;margin-bottom:20px">
+        <div id="detail-map" style="height:180px;background:var(--bg)"></div>
+        <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:14px;font-weight:700" id="dm-name">—</div>
+            <div style="font-size:12px;color:var(--ink3)" id="dm-addr">—</div>
+          </div>
+          <a id="dm-link" href="#" target="_blank" class="btn btn-secondary btn-sm">Cómo llegar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="bnav">
+  <a class="ni" href="index.html"><span class="ni-icon">🏠</span><span>Inicio</span></a>
+  <a class="ni" href="mapa.html"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
+  <a class="ni" href="resenas.html"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
+  <a class="ni" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const params = new URLSearchParams(location.search);
+const rid = params.get('id');
+if (!rid) { location.href='index.html'; }
+
+const { data:{ session } } = await sb.auth.getSession();
+if (!session) { location.href='login.html'; }
+
+let resto = null;
+let selectedStars = 0;
+let isFav = false;
+
+// ── Cargar restaurante ────────────────────────────────────────────────────────
+async function loadResto() {
+  const { data, error } = await sb.from('restaurants')
+    .select('*, categories(slug,name,icon), comunas(name)')
+    .eq('id', rid).single();
+  if (error || !data) { location.href='index.html'; return; }
+  resto = data;
+
+  document.title = `EasyFood — ${resto.name}`;
+  document.getElementById('rh-ico').textContent = resto.icon||'🍽️';
+  document.getElementById('rh-ico').className = `rh-ico-big ${resto.ri_class||'ri-bur'}`;
+  document.getElementById('rh-name').textContent = resto.name;
+  document.getElementById('rh-sub').textContent =
+    `${resto.comunas?.name||''} · ${'$'.repeat(resto.price_level||2)} · ${resto.hours||''}`;
+
+  // Stats (rating desde reviews)
+  const { data: rvs } = await sb.from('reviews').select('rating').eq('restaurant_id', rid);
+  const avg = rvs?.length ? (rvs.reduce((a,r)=>a+r.rating,0)/rvs.length).toFixed(1) : '—';
+  document.getElementById('rh-stats').innerHTML = `
+    <div class="rh-stat"><div class="n">★ ${avg}</div><div class="l">Rating</div></div>
+    <div class="rh-stat"><div class="n">${rvs?.length||0}</div><div class="l">Reseñas</div></div>
+    <div class="rh-stat"><div class="n">${'$'.repeat(resto.price_level||2)}</div><div class="l">Precio</div></div>
+    <div class="rh-stat"><div class="n">${resto.delivery?'🛵':'🪑'}</div><div class="l">${resto.delivery?'Delivery':'Solo local'}</div></div>`;
+
+  // Info card
+  document.getElementById('info-card').innerHTML = `
+    <div class="info-row"><span class="info-ico">📍</span><div class="info-text">${resto.address||'—'}</div></div>
+    <div class="info-row"><span class="info-ico">🕐</span><div class="info-text"><strong>Horario:</strong> ${resto.hours||'—'}</div></div>
+    <div class="info-row"><span class="info-ico">📞</span><div class="info-text"><a href="tel:${resto.phone||''}" style="color:var(--brand);text-decoration:none;font-weight:600">${resto.phone||'—'}</a></div></div>
+    <div class="info-row" style="border:none"><span class="info-ico">ℹ️</span><div class="info-text">${resto.description||''}</div></div>`;
+
+  // Rating box
+  const counts = [5,4,3,2,1].map(n => ({n, c: (rvs||[]).filter(r=>r.rating===n).length}));
+  const total  = rvs?.length||0;
+  document.getElementById('rating-box').innerHTML = `
+    <h3 style="font-family:'Syne',sans-serif;font-size:18px;letter-spacing:-.3px;margin-bottom:16px">Puntuación</h3>
+    <div class="big-rating">
+      <div class="big-num">${avg}</div>
+      <div><div style="color:var(--brand);font-size:18px">${avg!=='—'?'★'.repeat(Math.round(+avg)):''}</div>
+      <div style="font-size:12px;color:var(--ink3)">${total} reseñas</div></div>
+    </div>
+    ${counts.map(({n,c})=>`
+    <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink3);font-weight:600;margin-bottom:6px">
+      <span>${n}★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${total?Math.round(c/total*100):0}%"></div></div>
+      <span>${total?Math.round(c/total*100):0}%</span>
+    </div>`).join('')}`;
+
+  // Acciones
+  await checkFav();
+  document.getElementById('actions-bar').innerHTML = `
+    <button class="act-btn" id="btn-fav" onclick="window._toggleFav()">
+      <span class="act-ico">${isFav?'❤️':'🤍'}</span>${isFav?'Guardado':'Guardar'}
+    </button>
+    <a class="act-btn" href="tel:${resto.phone||''}"><span class="act-ico">📞</span>Llamar</a>
+    <button class="act-btn" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${resto.lat},${resto.lng}')">
+      <span class="act-ico">🧭</span>Ir aquí
+    </button>`;
+
+  // Mapa mini
+  document.getElementById('dm-name').textContent  = resto.name;
+  document.getElementById('dm-addr').textContent  = resto.address||'';
+  document.getElementById('dm-link').href = `https://www.google.com/maps/dir/?api=1&destination=${resto.lat},${resto.lng}`;
+  const dm = L.map('detail-map',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false});
+  dm.setView([+resto.lat,+resto.lng],16);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd'}).addTo(dm);
+  L.circleMarker([+resto.lat,+resto.lng],{radius:12,fillColor:'#FF5C00',color:'#fff',weight:3,fillOpacity:1}).addTo(dm);
+
+  // Mostrar form reseña
+  document.getElementById('review-form').style.display='block';
+  loadReviews();
+}
+
+// ── Favorito ──────────────────────────────────────────────────────────────────
+async function checkFav() {
+  const { data } = await sb.from('favorites')
+    .select('restaurant_id').eq('user_id', session.user.id).eq('restaurant_id', rid).single();
+  isFav = !!data;
+}
+
+window._toggleFav = async () => {
+  if (isFav) {
+    await sb.from('favorites').delete().eq('user_id',session.user.id).eq('restaurant_id',rid);
+    isFav=false;
+  } else {
+    await sb.from('favorites').insert({user_id:session.user.id,restaurant_id:rid});
+    isFav=true;
+  }
+  const btn=document.getElementById('btn-fav');
+  btn.innerHTML=`<span class="act-ico">${isFav?'❤️':'🤍'}</span>${isFav?'Guardado':'Guardar'}`;
+  showToast(isFav?'❤️ Guardado en favoritos':'🤍 Eliminado de favoritos');
+};
+
+// ── Reseñas ───────────────────────────────────────────────────────────────────
+async function loadReviews() {
+  const { data:reviews, error } = await sb.from('reviews')
+    .select('*, profiles(name,handle)')
+    .eq('restaurant_id', rid)
+    .order('created_at',{ascending:false});
+
+  const grid = document.getElementById('rev-grid');
+  document.getElementById('rev-count').textContent = `${reviews?.length||0} reseñas`;
+
+  if (!reviews?.length) {
+    grid.innerHTML='<p style="color:var(--ink3);text-align:center;padding:20px">Sé el primero en reseñar este local.</p>';
+    return;
+  }
+  grid.innerHTML = reviews.map(r=>{
+    const n=r.profiles?.name||'Usuario';
+    const ini=n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const fecha=new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="rcard">
+      <div class="rhdr">
+        <div class="avatar av-md av-a">${ini}</div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:700">${n}</div>
+        <div style="font-size:12px;color:var(--ink3)">${fecha}</div></div>
+        <div style="color:var(--brand)">${'★'.repeat(r.rating)}</div>
+      </div>
+      <p class="rtxt">${r.text}</p>
+      <div class="ract">
+        <button class="btnh">👍 Útil (${r.useful_count||0})</button>
+      </div>
+    </div>`}).join('');
+}
+
+// ── Star picker ───────────────────────────────────────────────────────────────
+for (let i=1;i<=5;i++){
+  const s=document.createElement('span');
+  s.className='sp';s.textContent='★';s.dataset.v=i;
+  s.onclick=()=>{
+    selectedStars=i;
+    document.querySelectorAll('.sp').forEach((el,j)=>el.classList.toggle('lit',j<i));
+  };
+  document.getElementById('star-picker').appendChild(s);
+}
+
+// ── Publicar reseña ───────────────────────────────────────────────────────────
+window._submitReview = async () => {
+  const txt = document.getElementById('rev-text').value.trim();
+  const errEl = document.getElementById('rev-error');
+  errEl.style.display='none';
+  if (!selectedStars){ errEl.textContent='Selecciona una puntuación'; errEl.style.display='block'; return; }
+  if (txt.length<20){ errEl.textContent='Escribe al menos 20 caracteres'; errEl.style.display='block'; return; }
+  document.getElementById('btn-review').textContent='Publicando…';
+  document.getElementById('btn-review').disabled=true;
+  const { error } = await sb.from('reviews').insert({
+    restaurant_id: rid,
+    user_id: session.user.id,
+    rating: selectedStars,
+    text: txt
+  });
+  document.getElementById('btn-review').textContent='Publicar reseña';
+  document.getElementById('btn-review').disabled=false;
+  if (error){ errEl.textContent=error.message; errEl.style.display='block'; return; }
+  document.getElementById('rev-text').value='';
+  selectedStars=0;
+  document.querySelectorAll('.sp').forEach(el=>el.classList.remove('lit'));
+  showToast('✅ ¡Reseña publicada!');
+  loadReviews();
+};
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  let t=document.getElementById('gt');
+  if(!t){t=document.createElement('div');t.id='gt';t.className='toast';document.body.appendChild(t);}
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+loadResto();
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EasyFood — Inicio</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="shared.css">
+<style>
+.hero {
+  background: var(--ink); padding: 56px 20px 32px;
+  position: relative; overflow: hidden;
+}
+@media(min-width:768px){ .hero { padding: 48px 40px 40px; } }
+.hb1 { position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:var(--brand);opacity:.14; }
+.hb2 { position:absolute;bottom:-80px;left:20%;width:200px;height:200px;border-radius:50%;background:var(--yellow);opacity:.10; }
+.htop { display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;position:relative;z-index:1; }
+.hbrand { display:flex;align-items:center;gap:10px; }
+.hlogo { width:36px;height:36px;border-radius:10px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px; }
+.hname { font-family:'Syne',sans-serif;font-size:20px;color:#fff; }
+.hav { width:38px;height:38px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none;font-family:'Syne',sans-serif; }
+.htitle { font-family:'Syne',sans-serif;font-size:clamp(28px,7vw,46px);line-height:1.1;letter-spacing:-2px;color:#fff;margin-bottom:8px;position:relative;z-index:1; }
+.htitle span { color:var(--yellow); }
+.hsub { font-size:14px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.6;position:relative;z-index:1; }
+.search-bar { display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--rmd);padding:13px 16px;transition:border-color .2s;position:relative;z-index:1; }
+.search-bar:focus-within { border-color:var(--brand);background:rgba(255,255,255,.15); }
+.search-bar input { flex:1;border:none;outline:none;background:transparent;font-size:15px;font-family:inherit;color:#fff; }
+.search-bar input::placeholder { color:rgba(255,255,255,.4); }
+.hbody { padding: 24px 20px 0; }
+@media(min-width:768px){ .hbody { padding: 32px 40px 0; } }
+.stats { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px; }
+.sc { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:14px 12px;text-align:center; }
+.snum { font-family:'Syne',sans-serif;font-size:22px;color:var(--brand);margin-bottom:2px; }
+.slbl { font-size:11px;color:var(--ink3);font-weight:500; }
+.sechdr { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px; }
+.sechdr h2 { font-family:'Syne',sans-serif;font-size:20px;letter-spacing:-.5px; }
+.sechdr a { font-size:13px;color:var(--brand);font-weight:600;text-decoration:none; }
+.cats { display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:28px; }
+.cats::-webkit-scrollbar { display:none; }
+.cat { display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;transition:transform .15s; }
+.cat:active { transform:scale(.94); }
+.catico { width:62px;height:62px;border-radius:20px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .15s; }
+.cat.active .catico { background:var(--brand-bg);border-color:var(--brand); }
+.cat span { font-size:11px;font-weight:600;color:var(--ink2); }
+.cat.active span { color:var(--brand); }
+.comunas-strip { display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:20px; }
+.comunas-strip::-webkit-scrollbar { display:none; }
+.com-pill { flex-shrink:0;padding:7px 14px;border-radius:30px;font-size:12px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;background:var(--surface);color:var(--ink2);transition:all .15px;white-space:nowrap; }
+.com-pill.active { background:var(--brand-bg);border-color:var(--brand);color:var(--brand); }
+.restos { display:flex;flex-direction:column;gap:16px; }
+@media(min-width:768px){ .restos { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); } }
+/* Skeleton loader */
+.skeleton { background:linear-gradient(90deg,var(--bg) 25%,var(--border) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; border-radius:var(--rlg);height:220px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+</style>
+</head>
+<body>
+
+<aside class="sidebar hide-mobile">
+  <div class="sb-brand"><div class="sb-logo">🍽️</div><span class="sb-name">EasyFood</span></div>
+  <a class="sl active" href="index.html" data-nav="home"><span class="ic">🏠</span> Inicio</a>
+  <a class="sl" href="mapa.html"    data-nav="map"><span class="ic">🗺️</span> Mapa</a>
+  <a class="sl" href="resenas.html" data-nav="reviews"><span class="ic">⭐</span> Reseñas</a>
+  <a class="sl sl-space" href="perfil.html" data-nav="profile"><span class="ic">👤</span> Mi Perfil</a>
+</aside>
+
+<main class="main-with-sidebar page-content">
+  <div class="hero">
+    <div class="hb1"></div><div class="hb2"></div>
+    <div class="htop">
+      <div class="hbrand">
+        <div class="hlogo">🍽️</div>
+        <span class="hname">EasyFood</span>
+      </div>
+      <a class="hav" href="perfil.html" id="user-av">👤</a>
+    </div>
+    <h1 class="htitle">Descubre dónde<br><span>comer hoy</span></h1>
+    <p class="hsub">Reseñas reales de personas cerca tuyo en Santiago.</p>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" id="search-input" placeholder="Busca un restaurante o plato..." oninput="onSearch()">
+    </div>
+  </div>
+
+  <div class="hbody">
+    <div class="stats">
+      <div class="sc"><div class="snum" id="st-total">…</div><div class="slbl">Restaurantes</div></div>
+      <div class="sc"><div class="snum" id="st-reviews">…</div><div class="slbl">Reseñas</div></div>
+      <div class="sc"><div class="snum">4.7★</div><div class="slbl">Promedio</div></div>
+    </div>
+
+    <div class="sechdr"><h2>¿Qué se te antoja?</h2></div>
+    <div class="cats" id="cats-row"></div>
+
+    <div class="sechdr"><h2>Explorar por zona</h2></div>
+    <div class="comunas-strip" id="comunas-row"></div>
+
+    <div class="sechdr">
+      <h2 id="restos-title">Destacados en Santiago</h2>
+      <a href="#" onclick="resetFilters()">Ver todos →</a>
+    </div>
+    <div class="restos" id="restos-grid">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+  </div>
+</main>
+
+<nav class="bnav">
+  <a class="ni active" href="index.html"><span class="ni-icon">🏠</span><span>Inicio</span></a>
+  <a class="ni" href="mapa.html"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
+  <a class="ni" href="resenas.html"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
+  <a class="ni" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
+</nav>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Auth check ───────────────────────────────────────────────────────────────
+const { data: { session } } = await sb.auth.getSession();
+if (!session) { window.location.href = 'login.html'; }
+
+// Avatar inicial
+const profile = session?.user;
+const name = profile?.user_metadata?.name || profile?.email || '';
+const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || '👤';
+document.getElementById('user-av').textContent = initials;
+
+// ── Estado ───────────────────────────────────────────────────────────────────
+let currentCat = 'all';
+let currentComuna = 'all';
+let searchTimer = null;
+
+const CATEGORIES = [
+  {id:'all',icon:'🍽️',label:'Todos'},
+  {id:'burger',icon:'🍔',label:'Burger'},
+  {id:'pizza',icon:'🍕',label:'Pizza'},
+  {id:'ramen',icon:'🍜',label:'Ramen'},
+  {id:'sushi',icon:'🍣',label:'Sushi'},
+  {id:'healthy',icon:'🥗',label:'Sano'},
+  {id:'coffee',icon:'☕',label:'Café'},
+  {id:'seafood',icon:'🦞',label:'Mariscos'},
+  {id:'chilena',icon:'🫕',label:'Chilena'},
+  {id:'parrilla',icon:'🥩',label:'Parrilla'},
+];
+
+// ── Render categorías ─────────────────────────────────────────────────────────
+function renderCats() {
+  document.getElementById('cats-row').innerHTML = CATEGORIES.map(c => `
+    <div class="cat ${c.id===currentCat?'active':''}" onclick="window._selectCat('${c.id}')">
+      <div class="catico">${c.icon}</div>
+      <span>${c.label}</span>
+    </div>`).join('');
+}
+window._selectCat = (id) => { currentCat=id; currentComuna='all'; renderCats(); renderComunas(); loadRestos(); };
+
+// ── Comunas ───────────────────────────────────────────────────────────────────
+async function renderComunas() {
+  const { data } = await sb.from('comunas').select('id, name').order('name');
+  const list = data || [];
+  const row = document.getElementById('comunas-row');
+  row.innerHTML = `<div class="com-pill ${currentComuna==='all'?'active':''}" onclick="window._selectComuna('all')">📍 Todas</div>` +
+    list.map(c => `<div class="com-pill ${currentComuna===c.id?'active':''}" onclick="window._selectComuna(${c.id})">${c.name}</div>`).join('');
+}
+window._selectComuna = (c) => { currentComuna=c; renderComunas(); loadRestos(); };
+
+// ── Cargar restaurantes desde Supabase ────────────────────────────────────────
+async function loadRestos() {
+  document.getElementById('restos-grid').innerHTML =
+    '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+
+  let q = sb.from('restaurants')
+    .select('*, categories(slug,icon,name), comunas(name)')
+    .eq('is_active', true)
+    .limit(40);
+
+  if (currentCat !== 'all') q = q.eq('categories.slug', currentCat);
+
+  const search = document.getElementById('search-input').value.trim();
+  if (search) q = q.ilike('name', `%${search}%`);
+
+  const { data: restos, error } = await q;
+
+  let list = restos || [];
+  // Filtro por categoría en cliente (join filter no siempre funciona en REST)
+  if (currentCat !== 'all') list = list.filter(r => r.categories?.slug === currentCat);
+  if (currentComuna !== 'all') list = list.filter(r => r.comuna_id === currentComuna);
+
+  const grid = document.getElementById('restos-grid');
+  if (!list.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--ink3);grid-column:1/-1">
+      <div style="font-size:40px;margin-bottom:12px">🔍</div>
+      <p style="font-weight:600">No encontramos locales con ese filtro</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(r => `
+    <div class="card" style="cursor:pointer" onclick="location.href='restaurante.html?id=${r.id}'">
+      <div class="${r.ri_class||'ri-bur'}" style="height:140px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;">
+        ${r.badge_label ? `<span class="pill pill-green" style="position:absolute;top:10px;left:10px">${r.badge_label}</span>` : ''}
+        <span>${r.icon||'🍽️'}</span>
+      </div>
+      <div style="padding:14px 16px 18px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+          <div style="font-size:17px;font-weight:700">${r.name}</div>
+          <span class="pill pill-brand" style="flex-shrink:0;font-size:12px">★ ${r.avg_rating||'—'}</span>
+        </div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:8px">
+          📍 ${r.comunas?.name||''} · ${'$'.repeat(r.price_level||2)} · ${r.delivery?'🛵 Delivery':'🪑 Solo local'}
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Stats
+  document.getElementById('st-total').textContent = list.length;
+}
+
+// ── Stats globales ────────────────────────────────────────────────────────────
+async function loadStats() {
+  const { count: rCount } = await sb.from('restaurants').select('*',{count:'exact',head:true}).eq('is_active',true);
+  const { count: rvCount } = await sb.from('reviews').select('*',{count:'exact',head:true});
+  document.getElementById('st-total').textContent = rCount||'…';
+  document.getElementById('st-reviews').textContent = rvCount||'…';
+}
+
+// ── Búsqueda con debounce ─────────────────────────────────────────────────────
+window.onSearch = () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadRestos, 400);
+};
+
+window.resetFilters = () => { currentCat='all'; currentComuna='all'; renderCats(); renderComunas(); loadRestos(); };
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderCats();
+renderComunas();
+loadRestos();
+loadStats();
+</script>
+</body>
+</html>
