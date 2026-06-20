@@ -173,22 +173,26 @@ async function loadRestos() {
   document.getElementById('restos-grid').innerHTML =
     '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
 
+  const search = document.getElementById('search-input').value.trim();
+
+  // Obtener category_id si hay filtro de categoría
+  let categoryId = null;
+  if (currentCat !== 'all') {
+    const { data: catData } = await sb.from('categories').select('id').eq('slug', currentCat).single();
+    categoryId = catData?.id;
+  }
+
   let q = sb.from('restaurants')
     .select('*, categories(slug,icon,name), comunas(name)')
     .eq('is_active', true)
     .limit(40);
 
-  if (currentCat !== 'all') q = q.eq('categories.slug', currentCat);
-
-  const search = document.getElementById('search-input').value.trim();
+  if (categoryId) q = q.eq('category_id', categoryId);
+  if (currentComuna !== 'all') q = q.eq('comuna_id', currentComuna);
   if (search) q = q.ilike('name', `%${search}%`);
 
   const { data: restos, error } = await q;
-
   let list = restos || [];
-  // Filtro por categoría en cliente (join filter no siempre funciona en REST)
-  if (currentCat !== 'all') list = list.filter(r => r.categories?.slug === currentCat);
-  if (currentComuna !== 'all') list = list.filter(r => r.comuna_id === currentComuna);
 
   const grid = document.getElementById('restos-grid');
   if (!list.length) {
