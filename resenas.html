@@ -35,8 +35,23 @@
 .ract { display:flex;gap:8px; }
 .btnh { font-size:12px;font-weight:600;font-family:inherit;color:var(--ink2);background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s; }
 .btnh:hover { background:var(--brand-bg);color:var(--brand);border-color:var(--brand); }
-.resto-tag { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--border);cursor:pointer;color:var(--ink2);margin-top:8px;text-decoration:none; }
-.resto-tag:hover { color:var(--brand); }
+.resto-tag { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--ink2);margin-top:8px;text-decoration:none; }
+.resto-tag:hover { color:var(--brand);border-color:var(--brand); }
+
+/* Verified card */
+.rcard-verified { border-color:rgba(0,194,122,.3) !important; }
+.verified-banner {
+  background:var(--green-bg);color:var(--green);
+  font-size:11px;font-weight:700;padding:6px 14px;
+  margin:-18px -18px 14px -18px;
+  border-bottom:1px solid rgba(0,194,122,.2);
+  display:flex;align-items:center;gap:6px;
+}
+
+/* Filtros por verificación */
+.ver-tabs { display:flex;gap:8px;padding:0 20px 14px;overflow-x:auto;scrollbar-width:none; }
+.ver-tabs::-webkit-scrollbar { display:none; }
+@media(min-width:768px){ .ver-tabs{padding:0 40px 16px;} }
 /* Skeleton */
 .skeleton { background:linear-gradient(90deg,var(--bg) 25%,var(--border) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--rlg);height:160px; }
 @keyframes shimmer { 0%{background-position:200% 0}100%{background-position:-200% 0} }
@@ -75,6 +90,13 @@
 
   <!-- Filtros categoría -->
   <div class="rev-filters" id="rev-filters"></div>
+
+  <!-- Filtro verificadas/todas -->
+  <div class="ver-tabs">
+    <div class="chip sel" id="vtab-all" onclick="setVerFilter('all')">🍽️ Todas</div>
+    <div class="chip" id="vtab-verified" onclick="setVerFilter('verified')">✅ Verificadas</div>
+    <div class="chip" id="vtab-unverified" onclick="setVerFilter('unverified')">📝 Sin verificar</div>
+  </div>
 
   <!-- Grid reseñas -->
   <div class="revbody" id="rev-grid">
@@ -119,6 +141,15 @@ const CATEGORIES = [
 ];
 
 let activeFilter = 'all';
+let verFilter = 'all';
+
+window.setVerFilter = (f) => {
+  verFilter = f;
+  ['all','verified','unverified'].forEach(id => {
+    document.getElementById(`vtab-${id}`).classList.toggle('sel', id === f);
+  });
+  loadReviews();
+};
 
 // ── Filtros ───────────────────────────────────────────────────────────────────
 function renderFilters() {
@@ -156,7 +187,7 @@ async function loadReviews() {
     '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
 
   let q = sb.from('reviews')
-    .select('*, profiles(name), restaurants(id, name, icon, category_id, categories(slug))')
+    .select('*, profiles(id, name, handle, avatar_url, points, level), restaurants(id, name, icon, category_id, categories(slug))')
     .order('created_at', {ascending: false})
     .limit(50);
 
@@ -166,6 +197,8 @@ async function loadReviews() {
   if (activeFilter !== 'all') {
     list = list.filter(r => r.restaurants?.categories?.slug === activeFilter);
   }
+  if (verFilter === 'verified')   list = list.filter(r => r.is_verified && r.receipt_url);
+  if (verFilter === 'unverified') list = list.filter(r => !r.is_verified || !r.receipt_url);
 
   const grid = document.getElementById('rev-grid');
   if (!list.length) {
@@ -197,6 +230,16 @@ async function loadReviews() {
     </div>`;
   }).join('');
 }
+
+// ── Marcar útil ──────────────────────────────────────────────────────────────
+window.markUseful = async (btn, reviewId, current) => {
+  btn.disabled = true;
+  const newCount = current + 1;
+  await sb.from('reviews').update({ useful_count: newCount }).eq('id', reviewId);
+  btn.textContent = `👍 Útil (${newCount})`;
+  btn.style.color = 'var(--brand)';
+  btn.style.borderColor = 'var(--brand)';
+};
 
 renderFilters();
 loadStats();

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EasyFood — Perfil</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.page-content { padding-bottom:80px; }
+
+.uhero {
+  background:var(--surface);padding:56px 20px 28px;
+  position:relative;overflow:hidden;text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.ub1 { position:absolute;top:-60px;right:-40px;width:200px;height:200px;border-radius:50%;background:var(--purple);opacity:.07;filter:blur(50px); }
+.ub2 { position:absolute;bottom:-40px;left:-20px;width:160px;height:160px;border-radius:50%;background:var(--brand);opacity:.06;filter:blur(40px); }
+
+.u-av {
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--brand));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:800;color:#fff;
+  margin:0 auto 12px;
+  border:3px solid rgba(167,139,250,.3);
+  font-family:'Syne',sans-serif;position:relative;z-index:1;
+  overflow:hidden;
+}
+.u-av img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.u-name   { font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);letter-spacing:-.5px;margin-bottom:2px;position:relative;z-index:1; }
+.u-handle { font-size:13px;color:var(--brand);font-weight:600;margin-bottom:2px;position:relative;z-index:1; }
+.u-bio    { font-size:13px;color:var(--ink3);margin-bottom:12px;position:relative;z-index:1;max-width:300px;margin-left:auto;margin-right:auto; }
+
+/* Badges */
+.u-badges { display:flex;gap:6px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:14px; }
+
+/* Level */
+.u-level { display:inline-flex;align-items:center;gap:8px;background:var(--brand-bg);border:1px solid var(--brand);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700;color:var(--brand);position:relative;z-index:1; }
+
+/* Stats */
+.ubody { padding:20px; }
+@media(min-width:768px){ .ubody{padding:24px 40px;display:grid;grid-template-columns:1fr 300px;gap:28px;} }
+
+.ustats { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px; }
+.usc { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:14px 12px;text-align:center;position:relative;overflow:hidden; }
+.usc::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--brand-bg),transparent); }
+.usnum { font-family:'Syne',sans-serif;font-size:22px;color:var(--brand);margin-bottom:2px;position:relative; }
+.uslbl { font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;position:relative; }
+
+.usec h3 { font-family:'Syne',sans-serif;font-size:17px;margin-bottom:14px;color:var(--ink); }
+.usec { margin-bottom:22px; }
+
+/* Logros */
+.u-ach-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
+.u-ach { background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:12px 8px;text-align:center; }
+.u-ach.on { border-color:var(--brand);background:var(--brand-bg); }
+.u-ach-ico { font-size:22px;margin-bottom:4px; }
+.u-ach-name { font-size:10px;font-weight:700;color:var(--ink); }
+
+/* Reseñas */
+.u-rev { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:14px;margin-bottom:10px;text-decoration:none;display:block;transition:all .15s; }
+.u-rev:hover { border-color:var(--brand);box-shadow:var(--sh-sm); }
+.u-rev-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
+.u-rev-name { font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px; }
+.u-rev-txt { font-size:13px;color:var(--ink3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+
+/* Es el propio usuario */
+.own-banner { background:var(--brand-bg);border:1px solid var(--brand);border-radius:var(--rsm);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--brand); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar hide-mobile">
+  <div class="sb-brand"><div class="sb-logo">🍽️</div><span class="sb-name">EasyFood</span></div>
+  <a class="sl" href="index.html"><span class="ic">🏠</span> Inicio</a>
+  <a class="sl" href="mapa.html"><span class="ic">🗺️</span> Mapa</a>
+  <a class="sl active" href="resenas.html"><span class="ic">⭐</span> Reseñas</a>
+  <a class="sl sl-space" href="perfil.html"><span class="ic">👤</span> Mi Perfil</a>
+</aside>
+
+<main class="main-with-sidebar page-content">
+
+  <div class="uhero">
+    <div class="ub1"></div><div class="ub2"></div>
+    <div style="position:relative;z-index:1;margin-bottom:16px">
+      <a href="javascript:history.back()" style="color:var(--ink3);font-size:14px;font-weight:600;text-decoration:none">← Volver</a>
+    </div>
+    <div class="u-av" id="u-av">…</div>
+    <div class="u-name"   id="u-name">Cargando…</div>
+    <div class="u-handle" id="u-handle"></div>
+    <div class="u-bio"    id="u-bio"></div>
+    <div class="u-badges" id="u-badges"></div>
+    <div class="u-level"  id="u-level">⭐ Nivel 1</div>
+  </div>
+
+  <div class="ubody">
+    <div>
+      <!-- Banner si es el propio usuario -->
+      <div id="own-banner" style="display:none" class="own-banner">
+        Este es tu perfil público
+        <a href="perfil.html" class="btn btn-primary btn-sm">Editar</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="ustats">
+        <div class="usc"><div class="usnum" id="u-st-rev">…</div><div class="uslbl">Reseñas</div></div>
+        <div class="usc"><div class="usnum" id="u-st-pts">…</div><div class="uslbl">Puntos</div></div>
+        <div class="usc"><div class="usnum" id="u-st-ach">…</div><div class="uslbl">Logros</div></div>
+      </div>
+
+      <!-- Reseñas recientes -->
+      <div class="usec">
+        <h3>✍️ Reseñas recientes</h3>
+        <div id="u-reviews"><div style="color:var(--ink3);font-size:14px">Cargando…</div></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha -->
+    <div>
+      <!-- Logros desbloqueados -->
+      <div class="usec">
+        <h3>🏆 Logros</h3>
+        <div class="u-ach-grid" id="u-ach-grid">
+          <div style="color:var(--ink3);font-size:13px;grid-column:span 3">Cargando…</div>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="usec">
+        <h3>📍 Info</h3>
+        <div style="background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--ink2)" id="u-info-comuna"></div>
+          <div style="padding:12px 16px;font-size:13px;color:var(--ink2)" id="u-info-joined"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<nav class="bnav">
+  <a class="ni" href="index.html"><span class="ni-icon">🏠</span><span>Inicio</span></a>
+  <a class="ni" href="mapa.html"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
+  <a class="ni active" href="resenas.html"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
+  <a class="ni" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
+</nav>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const params = new URLSearchParams(location.search);
+const uid = params.get('id');
+if (!uid) { location.href='index.html'; }
+
+const { data:{ session } } = await sb.auth.getSession();
+if (!session) { location.href='login.html'; }
+
+// ── Cargar perfil público ─────────────────────────────────────────────────────
+async function loadUser() {
+  const { data: u } = await sb.from('profiles')
+    .select('*, comunas(name)')
+    .eq('id', uid).single();
+
+  if (!u) { document.getElementById('u-name').textContent = 'Usuario no encontrado'; return; }
+
+  document.title = `EasyFood — ${u.name || 'Usuario'}`;
+
+  // Avatar
+  const avEl = document.getElementById('u-av');
+  if (u.avatar_url) {
+    avEl.innerHTML = `<img src="${u.avatar_url}" alt="${u.name}">`;
+  } else {
+    const ini = (u.name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    avEl.textContent = ini;
+  }
+
+  document.getElementById('u-name').textContent   = u.name || 'Usuario';
+  document.getElementById('u-handle').textContent = u.handle ? `@${u.handle.replace('@','')}` : '';
+  document.getElementById('u-bio').textContent    = u.bio || '';
+  document.getElementById('u-level').textContent  = `⭐ Nivel ${u.level||1} · ${u.points||0} pts`;
+  document.getElementById('u-st-pts').textContent = u.points || 0;
+
+  // Info
+  const comuna = u.comunas?.name || u.comuna || '';
+  document.getElementById('u-info-comuna').innerHTML = comuna ? `📍 ${comuna}` : '📍 Santiago, Chile';
+  const joined = new Date(u.created_at).toLocaleDateString('es-CL',{month:'long',year:'numeric'});
+  document.getElementById('u-info-joined').innerHTML = `📅 Miembro desde ${joined}`;
+
+  // Badges según nivel
+  const badges = [];
+  if (u.is_verified) badges.push('<span class="pill pill-green">✅ Verificado</span>');
+  if ((u.points||0) >= 500) badges.push('<span class="pill pill-brand">🥇 Top Contribuidor</span>');
+  if ((u.level||1) >= 5)    badges.push('<span class="pill pill-purple">⭐ Experto</span>');
+  document.getElementById('u-badges').innerHTML = badges.join('');
+
+  // Banner si es el propio usuario
+  if (session.user.id === uid) {
+    document.getElementById('own-banner').style.display = 'flex';
+  }
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  const [{ count: rvCount }, { count: achCount }] = await Promise.all([
+    sb.from('reviews').select('*',{count:'exact',head:true}).eq('user_id',uid),
+    sb.from('user_achievements').select('*',{count:'exact',head:true}).eq('user_id',uid),
+  ]);
+  document.getElementById('u-st-rev').textContent = rvCount || 0;
+  document.getElementById('u-st-ach').textContent = `${achCount||0}/10`;
+}
+
+// ── Logros ────────────────────────────────────────────────────────────────────
+async function loadAchievements() {
+  const [{ data: all }, { data: unlocked }] = await Promise.all([
+    sb.from('achievements').select('*').order('points_required'),
+    sb.from('user_achievements').select('achievement_id').eq('user_id', uid)
+  ]);
+  const uIds = new Set((unlocked||[]).map(u=>u.achievement_id));
+  document.getElementById('u-ach-grid').innerHTML = (all||[]).map(a => `
+    <div class="u-ach ${uIds.has(a.id)?'on':''}">
+      <div class="u-ach-ico" style="${!uIds.has(a.id)?'filter:grayscale(1);opacity:.35':''}">${a.icon}</div>
+      <div class="u-ach-name" style="${!uIds.has(a.id)?'color:var(--ink3)':''}">${a.name}</div>
+    </div>`).join('');
+}
+
+// ── Reseñas ───────────────────────────────────────────────────────────────────
+async function loadReviews() {
+  const { data } = await sb.from('reviews')
+    .select('*, restaurants(id,name,icon)')
+    .eq('user_id', uid)
+    .order('created_at',{ascending:false})
+    .limit(8);
+
+  const el = document.getElementById('u-reviews');
+  el.innerHTML = data?.length ? data.map(r => {
+    const fecha = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
+    return `<a class="u-rev" href="restaurante.html?id=${r.restaurants?.id}">
+      <div class="u-rev-top">
+        <div class="u-rev-name">
+          ${r.restaurants?.icon||'🍽️'} ${r.restaurants?.name||'—'}
+          ${r.is_verified ? '<span class="pill pill-green" style="font-size:10px">✅</span>' : ''}
+        </div>
+        <div style="color:var(--brand);font-size:13px">${'★'.repeat(r.rating)}</div>
+      </div>
+      <div class="u-rev-txt">${r.text}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:6px">${fecha} · 👍 ${r.useful_count||0} útiles</div>
+    </a>`;
+  }).join('')
+  : '<p style="color:var(--ink3);font-size:14px">Este usuario aún no ha escrito reseñas.</p>';
+}
+
+loadUser();
+loadStats();
+loadAchievements();
+loadReviews();
+</script>
+</body>
+</html>
