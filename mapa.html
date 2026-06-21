@@ -6,122 +6,137 @@
 <title>EasyFood — Mapa</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="shared.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 <style>
-html, body { height: 100%; overflow: hidden; }
+html, body { height:100%; overflow:hidden; }
 
 .map-page {
-  height: 100vh;
-  display: flex; flex-direction: column;
+  height:100vh; display:flex; flex-direction:column;
 }
-@media(min-width:768px){ .map-page { margin-left: 250px; } }
+@media(min-width:768px){ .map-page { margin-left:240px; } }
 
 /* Topbar */
 .maptop {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 54px 16px 14px; display: flex; align-items: center; gap: 12px;
-  flex-shrink: 0; z-index: 100; position: relative;
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:54px 16px 12px; display:flex; align-items:center; gap:10px;
+  flex-shrink:0; z-index:100; position:relative;
 }
-@media(min-width:768px){ .maptop { padding: 20px 32px; } }
+@media(min-width:768px){ .maptop { padding:16px 24px; } }
+.maptop h2 { font-family:'Syne',sans-serif; font-size:17px; flex:1; color:var(--ink); }
 
-.maptop h2 { font-family:'Syne',sans-serif; font-size:18px; letter-spacing:-.4px; flex:1; }
+/* GPS dot */
 .gps-dot { width:9px;height:9px;border-radius:50%;background:var(--ink3);flex-shrink:0;transition:background .3s; }
-.gps-dot.on { background:var(--green);animation:blink 2s infinite; }
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+.gps-dot.on { background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.4} }
 
-/* Filtros horizontales sobre mapa */
+/* Contador */
+.map-count { background:var(--brand-bg);color:var(--brand);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0; }
+
+/* Filtros */
 .map-filters {
-  position: absolute; top: 100%; left: 0; right: 0; z-index: 99;
-  padding: 10px 16px; display: flex; gap: 8px; overflow-x: auto;
-  scrollbar-width: none; background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:10px 14px; display:flex; gap:8px;
+  overflow-x:auto; scrollbar-width:none; flex-shrink:0;
 }
-.map-filters::-webkit-scrollbar { display: none; }
+.map-filters::-webkit-scrollbar { display:none; }
 .mf-btn {
-  flex-shrink: 0; padding: 7px 14px; border-radius: 30px;
-  font-size: 12px; font-weight: 700; border: 1.5px solid var(--border);
-  cursor: pointer; background: var(--surface); color: var(--ink2);
-  transition: all .15s; font-family: inherit; white-space: nowrap;
+  flex-shrink:0; padding:6px 14px; border-radius:30px;
+  font-size:12px; font-weight:700; border:1.5px solid var(--border);
+  cursor:pointer; background:var(--surface2); color:var(--ink2);
+  transition:all .15s; font-family:inherit; white-space:nowrap;
 }
-.mf-btn.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.mf-btn.active { background:var(--brand); border-color:var(--brand); color:#fff; }
 
 /* Mapa */
-#map-wrap { flex: 1; position: relative; overflow: hidden; }
-#lmap { position: absolute; inset: 0; z-index: 1; }
+#map-wrap { flex:1; position:relative; overflow:hidden; }
+#lmap { position:absolute; inset:0; z-index:1; }
 
-/* Permiso GPS overlay */
+/* Permiso GPS */
 #map-perm {
-  position: absolute; inset: 0; z-index: 500;
-  background: rgba(248,245,241,.97);
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 16px; padding: 32px; text-align: center;
+  position:absolute; inset:0; z-index:500;
+  background:var(--bg);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:16px; padding:32px; text-align:center;
 }
-.perm-ico { font-size: 64px; }
-#map-perm h3 { font-family:'Syne',sans-serif; font-size:24px; letter-spacing:-.5px; }
-#map-perm p { font-size: 14px; color: var(--ink3); line-height: 1.7; max-width: 280px; }
+.perm-ico { font-size:64px; }
+#map-perm h3 { font-family:'Syne',sans-serif; font-size:24px; color:var(--ink); }
+#map-perm p  { font-size:14px; color:var(--ink3); line-height:1.7; max-width:280px; }
 
-/* Barra inferior del mapa */
-.mapbar {
-  background: var(--surface); border-top: 1px solid var(--border);
-  padding: 12px 16px; display: flex; gap: 10px; flex-shrink: 0;
+/* Loading overlay */
+#map-loading {
+  position:absolute; inset:0; z-index:400;
+  background:var(--bg); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
 }
-.ipill { flex:1;background:var(--bg);border-radius:var(--rsm);padding:10px;text-align:center; }
-.ipill .lbl { font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:2px; }
-.ipill .val { font-size:17px;font-weight:700;color:var(--ink); }
-.ipill .unit { font-size:9px;color:var(--ink3); }
+#map-loading p { font-size:14px; color:var(--ink3); font-weight:600; }
 
-/* Bottom sheet – detalle restaurante */
+/* Bottom sheet */
 .resto-sheet {
-  position: absolute; bottom: 0; left: 0; right: 0; z-index: 600;
-  background: var(--surface); border-radius: var(--rxl) var(--rxl) 0 0;
-  box-shadow: 0 -8px 32px rgba(20,17,15,.15);
-  transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
-  padding: 8px 20px 20px; max-height: 60vh; overflow-y: auto;
+  position:absolute; bottom:0; left:0; right:0; z-index:600;
+  background:var(--surface); border-radius:var(--rxl) var(--rxl) 0 0;
+  box-shadow:0 -8px 32px rgba(0,0,0,.5);
+  transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+  padding:8px 20px 24px; max-height:65vh; overflow-y:auto;
+  border-top:1px solid var(--border);
 }
-.resto-sheet.open { transform: translateY(0); }
-.sheet-handle { width:44px;height:5px;background:var(--border2);border-radius:3px;margin:0 auto 18px; }
+.resto-sheet.open { transform:translateY(0); }
+.sheet-handle { width:44px;height:5px;background:var(--surface3);border-radius:3px;margin:0 auto 18px; }
 
-.sheet-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
-.sheet-ico { width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0; }
-.sheet-info { flex:1; }
-.sheet-name { font-family:'Syne',sans-serif; font-size:20px; letter-spacing:-.4px; margin-bottom:4px; }
-.sheet-meta { font-size:13px; color:var(--ink3); }
-.sheet-actions { display:flex;gap:10px;flex-wrap:wrap;margin-top:12px; }
+.sheet-header { display:flex; gap:14px; align-items:flex-start; margin-bottom:14px; }
+.sheet-ico { width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden; }
+.sheet-ico img { width:100%;height:100%;object-fit:contain; }
+.sheet-name { font-family:'Syne',sans-serif; font-size:19px; letter-spacing:-.3px; color:var(--ink); margin-bottom:4px; }
+.sheet-meta { font-size:13px; color:var(--ink3); margin-bottom:2px; }
+.sheet-actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:14px; }
+.sheet-desc { font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:10px; }
 
-.leaflet-control-zoom a { background:var(--surface)!important;color:var(--ink)!important;border-color:var(--border)!important; }
+/* Stats bar */
+.mapbar {
+  background:var(--surface); border-top:1px solid var(--border);
+  padding:10px 16px; display:flex; gap:8px; flex-shrink:0;
+}
+.ipill { flex:1;background:var(--surface2);border-radius:var(--rsm);padding:8px;text-align:center;border:1px solid var(--border); }
+.ipill .lbl { font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:2px; }
+.ipill .val { font-size:15px;font-weight:700;color:var(--ink); }
+
+/* Leaflet dark overrides */
+.leaflet-control-zoom a { background:var(--surface2)!important;color:var(--ink)!important;border-color:var(--border)!important; }
+.leaflet-control-zoom a:hover { background:var(--surface3)!important; }
 </style>
 </head>
 <body>
 
-<!-- Sidebar desktop -->
 <aside class="sidebar hide-mobile">
-  <div class="sb-brand">
-    <div class="sb-logo">🍽️</div>
-    <span class="sb-name">EasyFood</span>
-  </div>
-  <a class="sl" href="index.html"   data-nav="home">   <span class="ic">🏠</span> Inicio</a>
-  <a class="sl active" href="mapa.html" data-nav="map"><span class="ic">🗺️</span> Mapa</a>
-  <a class="sl" href="resenas.html" data-nav="reviews"><span class="ic">⭐</span> Reseñas</a>
-  <a class="sl sl-space" href="perfil.html" data-nav="profile"><span class="ic">👤</span> Mi Perfil</a>
+  <div class="sb-brand"><div class="sb-logo">🍽️</div><span class="sb-name">EasyFood</span></div>
+  <a class="sl" href="index.html"><span class="ic">🏠</span> Inicio</a>
+  <a class="sl active" href="mapa.html"><span class="ic">🗺️</span> Mapa</a>
+  <a class="sl" href="resenas.html"><span class="ic">⭐</span> Reseñas</a>
+  <a class="sl sl-space" href="perfil.html"><span class="ic">👤</span> Mi Perfil</a>
 </aside>
 
 <div class="map-page">
 
-  <!-- Top bar -->
-  <div class="maptop" id="maptop">
-    <a href="index.html" class="btn btn-secondary btn-sm" style="padding:9px 12px;">← Volver</a>
-    <h2>Restaurantes en Santiago</h2>
+  <!-- Topbar -->
+  <div class="maptop">
+    <a href="index.html" class="btn btn-secondary btn-sm" style="padding:8px 12px;flex-shrink:0">←</a>
+    <h2>Mapa de Santiago</h2>
+    <span class="map-count" id="map-count">…</span>
     <div class="gps-dot" id="gps-dot"></div>
   </div>
 
-  <!-- Filtros categoría -->
+  <!-- Filtros -->
   <div class="map-filters" id="map-filters"></div>
 
   <!-- Mapa -->
-  <div id="map-wrap" style="margin-top:52px">
+  <div id="map-wrap">
+
+    <!-- Loading -->
+    <div id="map-loading">
+      <div class="spinner"></div>
+      <p>Cargando restaurantes…</p>
+    </div>
 
     <!-- Permiso GPS -->
-    <div id="map-perm">
+    <div id="map-perm" style="display:none">
       <div class="perm-ico">📍</div>
       <h3>Ver locales cerca tuyo</h3>
       <p>Activa tu ubicación para encontrar restaurantes a tu alrededor en tiempo real.</p>
@@ -138,135 +153,209 @@ html, body { height: 100%; overflow: hidden; }
     </div>
   </div>
 
-  <!-- Barra estado GPS -->
+  <!-- Stats bar -->
   <div class="mapbar">
-    <div class="ipill"><div class="lbl">Precisión</div><div class="val"><span id="v-acc">—</span><span class="unit"> m</span></div></div>
-    <div class="ipill"><div class="lbl">Velocidad</div><div class="val"><span id="v-spd">—</span><span class="unit"> km/h</span></div></div>
-    <div class="ipill"><div class="lbl">Dirección</div><div class="val" id="v-dir" style="font-size:13px;padding-top:2px">—</div></div>
-    <div class="ipill"><div class="lbl">Locales</div><div class="val" id="v-count">15</div></div>
+    <div class="ipill"><div class="lbl">Locales</div><div class="val" id="v-count">…</div></div>
+    <div class="ipill"><div class="lbl">Precisión</div><div class="val"><span id="v-acc">—</span><span style="font-size:10px;color:var(--ink3)"> m</span></div></div>
+    <div class="ipill"><div class="lbl">Dirección</div><div class="val" id="v-dir" style="font-size:12px">—</div></div>
+    <div class="ipill"><div class="lbl">Velocidad</div><div class="val"><span id="v-spd">—</span><span style="font-size:10px;color:var(--ink3)"> km/h</span></div></div>
   </div>
 </div>
 
 <!-- Bottom nav mobile -->
 <nav class="bnav" style="display:none">
-  <a class="ni" href="index.html"   data-nav="home">   <span class="ni-icon">🏠</span><span>Inicio</span></a>
-  <a class="ni active" href="mapa.html" data-nav="map"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
-  <a class="ni" href="resenas.html" data-nav="reviews"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
-  <a class="ni" href="perfil.html"  data-nav="profile"><span class="ni-icon">👤</span><span>Perfil</span></div></a>
+  <a class="ni" href="index.html"><span class="ni-icon">🏠</span><span>Inicio</span></a>
+  <a class="ni active" href="mapa.html"><span class="ni-icon">🗺️</span><span>Mapa</span></a>
+  <a class="ni" href="resenas.html"><span class="ni-icon">⭐</span><span>Reseñas</span></a>
+  <a class="ni" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
 </nav>
 
-<script src="shared.js"></script>
-<script>
-let leafMap = null, userMk = null, accCirc = null, hdgLine = null;
-let curPos = null, curHdg = null;
-let activeCat = 'all';
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
 
-// ── Filtros ──────────────────────────────────────────────────────────────────
-function renderMapFilters() {
-  const row = document.getElementById('map-filters');
-  row.innerHTML = EF.categories.map(c => `
-    <button class="mf-btn ${c.id === activeCat ? 'active' : ''}" onclick="setMapCat('${c.id}')">
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Auth check
+const { data:{ session } } = await sb.auth.getSession();
+if (!session) { location.href='login.html'; }
+
+// ── Estado ────────────────────────────────────────────────────────────────────
+let leafMap    = null;
+let userMk     = null;
+let accCirc    = null;
+let hdgLine    = null;
+let curPos     = null;
+let allRestos  = [];
+let markers    = [];
+let activeCat  = 'all';
+
+const CATEGORIES = [
+  {id:'all',     icon:'🍽️', label:'Todos'},
+  {id:'burger',  icon:'🍔', label:'Burger'},
+  {id:'pizza',   icon:'🍕', label:'Pizza'},
+  {id:'ramen',   icon:'🍜', label:'Ramen'},
+  {id:'sushi',   icon:'🍣', label:'Sushi'},
+  {id:'healthy', icon:'🥗', label:'Sano/Vegano'},
+  {id:'coffee',  icon:'☕', label:'Café'},
+  {id:'seafood', icon:'🦞', label:'Mariscos'},
+  {id:'chilena', icon:'🫕', label:'Chilena'},
+  {id:'parrilla',icon:'🥩', label:'Parrilla'},
+];
+
+// ── Cargar restaurantes desde Supabase ────────────────────────────────────────
+async function loadRestaurants() {
+  const { data, error } = await sb
+    .from('restaurants')
+    .select('*, categories(slug,name,icon), comunas(name)')
+    .eq('is_active', true)
+    .not('lat', 'is', null)
+    .not('lng', 'is', null);
+
+  if (error) { console.error(error); return []; }
+  return data || [];
+}
+
+// ── Render filtros ────────────────────────────────────────────────────────────
+function renderFilters() {
+  document.getElementById('map-filters').innerHTML = CATEGORIES.map(c => `
+    <button class="mf-btn ${c.id===activeCat?'active':''}" onclick="window._setCat('${c.id}')">
       ${c.icon} ${c.label}
     </button>`).join('');
 }
 
-function setMapCat(id) {
+window._setCat = (id) => {
   activeCat = id;
-  renderMapFilters();
+  renderFilters();
   renderMarkers();
-}
+};
 
-// ── Inicializar Leaflet ──────────────────────────────────────────────────────
-function initLeaflet(center = [-33.444, -70.650], zoom = 13) {
-  if (leafMap) return;
-  leafMap = L.map('lmap', { zoomControl: true, attributionControl: false });
-  leafMap.setView(center, zoom);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    { subdomains:'abcd', maxZoom:20 }).addTo(leafMap);
-  renderMarkers();
-  setTimeout(() => leafMap.invalidateSize(), 150);
-}
+// ── SVG map para categorías ───────────────────────────────────────────────────
+const SVG_MAP = {
+  burger:'Hamburger-bro.svg', pizza:'Pizza_sharing-bro.svg',
+  ramen:'Ramen-amico.svg', sushi:'Poke_bowl-rafiki.svg',
+  seafood:'Poke_bowl-rafiki.svg', healthy:'fruit_salad-pana.svg',
+  chilena:'moai-chile.svg', coffee:'fruit_salad-pana.svg',
+  parrilla:'food-meat.svg', bar:'moai-chile.svg',
+};
 
+// ── Renderizar marcadores ─────────────────────────────────────────────────────
 function renderMarkers() {
-  if (!leafMap) return;
-  // Limpiar marcadores anteriores (excepto usuario)
-  leafMap.eachLayer(l => {
-    if (l._efMarker) leafMap.removeLayer(l);
-  });
+  // Limpiar marcadores anteriores
+  markers.forEach(m => leafMap.removeLayer(m));
+  markers = [];
+
   const list = activeCat === 'all'
-    ? EF.restaurants
-    : EF.restaurants.filter(r => r.category === activeCat);
-  document.getElementById('v-count').textContent = list.length;
+    ? allRestos
+    : allRestos.filter(r => r.categories?.slug === activeCat);
+
+  document.getElementById('v-count').textContent   = list.length;
+  document.getElementById('map-count').textContent = `${list.length} locales`;
 
   list.forEach(r => {
-    const ic = L.divIcon({
+    if (!r.lat || !r.lng) return;
+
+    const slug = r.categories?.slug || 'chilena';
+    const color = {
+      burger:'#FF5C00', pizza:'#9B59B6', ramen:'#F39C12',
+      sushi:'#27AE60', seafood:'#2980B9', healthy:'#16A085',
+      chilena:'#E67E22', coffee:'#8E44AD', parrilla:'#C0392B', bar:'#7F8C8D'
+    }[slug] || '#FF5C00';
+
+    const icon = L.divIcon({
       html: `<div style="
-        background:#fff;border:2.5px solid #FF5C00;border-radius:20px;
-        padding:5px 10px;font-size:12px;font-weight:700;white-space:nowrap;
-        box-shadow:0 2px 10px rgba(255,92,0,.25);cursor:pointer;
-        display:flex;align-items:center;gap:4px">
-        ${r.icon} ${r.name} <span style="color:#FF5C00">★${r.rating}</span>
+        background:${color};color:#fff;
+        border-radius:20px;padding:5px 10px;
+        font-size:11px;font-weight:700;white-space:nowrap;
+        box-shadow:0 3px 12px rgba(0,0,0,.35);
+        cursor:pointer;display:flex;align-items:center;gap:5px;
+        border:2px solid rgba(255,255,255,.3);
+      ">
+        ${r.categories?.icon||'🍽️'} ${r.name}
+        ${r.avg_rating ? `<span style="background:rgba(255,255,255,.25);border-radius:10px;padding:1px 5px">★${r.avg_rating}</span>` : ''}
       </div>`,
-      iconAnchor: [0, 20], className: ''
+      iconAnchor:[0,20], className:''
     });
-    const mk = L.marker([r.lat, r.lng], { icon: ic }).addTo(leafMap);
-    mk._efMarker = true;
+
+    const mk = L.marker([+r.lat, +r.lng], { icon }).addTo(leafMap);
     mk.on('click', () => showSheet(r));
+    markers.push(mk);
   });
 }
 
-// ── Bottom sheet ─────────────────────────────────────────────────────────────
+// ── Bottom sheet ──────────────────────────────────────────────────────────────
 function showSheet(r) {
-  const content = document.getElementById('sheet-content');
-  content.innerHTML = `
+  const slug    = r.categories?.slug || 'chilena';
+  const svg     = SVG_MAP[slug] || 'moai-chile.svg';
+  const bgColor = {
+    burger:'#2A1800', pizza:'#1E0F2A', ramen:'#1A1500',
+    sushi:'#001A12',  seafood:'#001224', healthy:'#001A0A',
+    chilena:'#1A1200', coffee:'#1A1200', parrilla:'#2A1800'
+  }[slug] || '#1C1C1E';
+
+  document.getElementById('sheet-content').innerHTML = `
     <div class="sheet-header">
-      <div class="sheet-ico ${r.ri_class}">${r.icon}</div>
-      <div class="sheet-info">
+      <div class="sheet-ico" style="background:${bgColor}">
+        <img src="${svg}" alt="${r.name}">
+      </div>
+      <div style="flex:1">
         <div class="sheet-name">${r.name}</div>
-        <div class="sheet-meta">★ ${r.rating} · ${r.reviews_count} reseñas · ${r.price}</div>
-        <div class="sheet-meta" style="margin-top:2px">📍 ${r.address}</div>
+        <div class="sheet-meta">⭐ ${r.avg_rating||'—'} · ${r.reviews_count||0} reseñas · ${'$'.repeat(r.price_level||2)}</div>
+        <div class="sheet-meta">📍 ${r.comunas?.name||''} · ${r.hours||''}</div>
+        ${r.delivery ? '<span class="pill pill-green" style="margin-top:4px;display:inline-flex">🛵 Delivery</span>' : ''}
       </div>
     </div>
-    <div class="sheet-meta" style="margin-bottom:12px;line-height:1.6">${r.description}</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-      ${r.tags.map(t=>`<span class="pill" style="background:var(--bg);color:var(--ink2);border:1px solid var(--border)">${t}</span>`).join('')}
-      ${r.delivery ? '<span class="pill pill-green">🛵 Delivery</span>' : ''}
-    </div>
+    <p class="sheet-desc">${r.description||''}</p>
     <div class="sheet-actions">
       <a href="restaurante.html?id=${r.id}" class="btn btn-primary btn-sm">Ver reseñas</a>
-      <a href="tel:${r.phone}" class="btn btn-secondary btn-sm">📞 Llamar</a>
+      ${r.phone ? `<a href="tel:${r.phone}" class="btn btn-secondary btn-sm">📞 Llamar</a>` : ''}
       <button class="btn btn-secondary btn-sm" onclick="centerOn(${r.lat},${r.lng})">🎯 Centrar</button>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}" target="_blank" class="btn btn-secondary btn-sm">🧭 Cómo llegar</a>
     </div>`;
+
   document.getElementById('resto-sheet').classList.add('open');
 }
 
-function centerOn(lat, lng) {
-  leafMap.setView([lat, lng], 16);
+window.centerOn = (lat, lng) => {
+  leafMap.setView([lat, lng], 17);
   document.getElementById('resto-sheet').classList.remove('open');
-}
+};
 
 // Cerrar sheet al tocar mapa
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('lmap').addEventListener('click', () => {
-    document.getElementById('resto-sheet').classList.remove('open');
-  });
+document.getElementById('lmap').addEventListener('click', () => {
+  document.getElementById('resto-sheet').classList.remove('open');
 });
 
-// ── GPS ──────────────────────────────────────────────────────────────────────
-function startGPS() {
-  document.getElementById('map-perm').style.display = 'none';
-  initLeaflet();
-  if (!navigator.geolocation) {
-    document.getElementById('v-acc').textContent = 'No disponible'; return;
-  }
-  navigator.geolocation.watchPosition(onPos, onErr, { enableHighAccuracy:true, maximumAge:3000, timeout:20000 });
-  setupCompass();
+// ── Inicializar Leaflet ───────────────────────────────────────────────────────
+function initMap(center = [-33.444, -70.650], zoom = 12) {
+  if (leafMap) return;
+  leafMap = L.map('lmap', { zoomControl:true, attributionControl:false });
+  leafMap.setView(center, zoom);
+
+  // Tile oscuro
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    subdomains:'abcd', maxZoom:20
+  }).addTo(leafMap);
+
+  renderMarkers();
+  setTimeout(() => leafMap.invalidateSize(), 200);
 }
 
-function skipGPS() {
+// ── GPS ───────────────────────────────────────────────────────────────────────
+window.startGPS = () => {
   document.getElementById('map-perm').style.display = 'none';
-  initLeaflet();
-}
+  initMap();
+  if (!navigator.geolocation) return;
+  navigator.geolocation.watchPosition(onPos, onErr,
+    { enableHighAccuracy:true, maximumAge:3000, timeout:20000 });
+  setupCompass();
+};
+
+window.skipGPS = () => {
+  document.getElementById('map-perm').style.display = 'none';
+  initMap();
+};
 
 function onPos(pos) {
   const { latitude:lat, longitude:lng, accuracy:acc, speed:spd, heading:hdg } = pos.coords;
@@ -275,17 +364,21 @@ function onPos(pos) {
   document.getElementById('v-spd').textContent = spd ? Math.round(spd*3.6) : '0';
   document.getElementById('gps-dot').classList.add('on');
   leafMap.invalidateSize();
+
   if (!userMk) {
     leafMap.setView([lat, lng], 15);
     userMk = L.circleMarker([lat,lng], {
-      radius:14,fillColor:'#FF5C00',color:'#fff',weight:4,fillOpacity:1,zIndexOffset:9999
+      radius:14, fillColor:'#FF5C00', color:'#fff',
+      weight:4, fillOpacity:1, zIndexOffset:9999
     }).addTo(leafMap).bindPopup('📍 Estás aquí').openPopup();
-    accCirc = L.circle([lat,lng], { radius:acc,color:'#FF5C00',fillColor:'#FF5C00',fillOpacity:.08,weight:1 }).addTo(leafMap);
+    accCirc = L.circle([lat,lng], {
+      radius:acc, color:'#FF5C00', fillColor:'#FF5C00', fillOpacity:.08, weight:1
+    }).addTo(leafMap);
   } else {
     userMk.setLatLng([lat,lng]);
     accCirc.setLatLng([lat,lng]).setRadius(acc);
   }
-  if (hdg != null && !isNaN(hdg) && hdg > 0) { curHdg = hdg; drawHdg(); }
+  if (hdg != null && !isNaN(hdg) && hdg > 0) { drawHdg(lat, lng, hdg); }
 }
 
 function onErr(e) {
@@ -294,34 +387,53 @@ function onErr(e) {
 }
 
 function setupCompass() {
-  if (typeof DeviceOrientationEvent !== 'undefined') {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission().then(s => { if(s==='granted') addOrient(); }).catch(()=>{});
-    } else { addOrient(); }
-  }
+  if (typeof DeviceOrientationEvent === 'undefined') return;
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(s => { if(s==='granted') addOrient(); }).catch(()=>{});
+  } else { addOrient(); }
 }
 function addOrient() {
   window.addEventListener('deviceorientationabsolute', onOrient, true);
   window.addEventListener('deviceorientation', onOrient, true);
 }
 function onOrient(e) {
-  let h = null;
-  if (e.webkitCompassHeading != null) h = e.webkitCompassHeading;
-  else if (e.absolute && e.alpha != null) h = (360-e.alpha)%360;
-  if (h != null) { curHdg = h; drawHdg(); }
+  if (!curPos) return;
+  let h = e.webkitCompassHeading ?? (e.absolute && e.alpha != null ? (360-e.alpha)%360 : null);
+  if (h != null) drawHdg(curPos.lat, curPos.lng, h);
 }
-function drawHdg() {
-  if (!curPos || curHdg == null || !leafMap) return;
+function drawHdg(lat, lng, hdg) {
   const dirs = ['N','NE','E','SE','S','SO','O','NO'];
-  document.getElementById('v-dir').textContent = dirs[Math.round(curHdg/45)%8]+' '+Math.round(curHdg)+'°';
-  const rad = curHdg*Math.PI/180, d = 0.0005;
-  const dest = [curPos.lat+d*Math.cos(rad), curPos.lng+d*Math.sin(rad)];
+  document.getElementById('v-dir').textContent = dirs[Math.round(hdg/45)%8]+' '+Math.round(hdg)+'°';
+  const rad=hdg*Math.PI/180, d=0.0005;
+  const dest=[lat+d*Math.cos(rad), lng+d*Math.sin(rad)];
   if (hdgLine) leafMap.removeLayer(hdgLine);
-  hdgLine = L.polyline([[curPos.lat,curPos.lng],dest],
+  hdgLine = L.polyline([[lat,lng],dest],
     {color:'#FF5C00',weight:4,opacity:.9,dashArray:'8,5'}).addTo(leafMap);
 }
 
-window.addEventListener('load', renderMapFilters);
+// ── Realtime — escuchar nuevos restaurantes ───────────────────────────────────
+function subscribeRealtime() {
+  sb.channel('restaurants-map')
+    .on('postgres_changes', {
+      event: '*', schema: 'public', table: 'restaurants'
+    }, async () => {
+      // Recargar todos los restaurantes cuando haya cambios
+      allRestos = await loadRestaurants();
+      renderMarkers();
+    })
+    .subscribe();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderFilters();
+
+// Cargar restaurantes primero
+allRestos = await loadRestaurants();
+document.getElementById('map-loading').style.display = 'none';
+document.getElementById('map-perm').style.display    = 'flex';
+
+subscribeRealtime();
 </script>
 </body>
 </html>
