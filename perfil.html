@@ -19,39 +19,44 @@
 .pb1 { position:absolute;top:-60px;right:-40px;width:220px;height:220px;border-radius:50%;background:var(--brand);opacity:.07;filter:blur(50px); }
 .pb2 { position:absolute;bottom:-40px;left:-20px;width:180px;height:180px;border-radius:50%;background:var(--purple);opacity:.06;filter:blur(40px); }
 
+/* Avatar con botón cámara */
+.av-wrap { position:relative;width:88px;margin:0 auto 12px;z-index:1; }
 .p-av {
   width:88px;height:88px;border-radius:50%;
   background:linear-gradient(135deg,var(--brand),#FF9500);
   display:flex;align-items:center;justify-content:center;
   font-size:30px;font-weight:800;color:#fff;
-  margin:0 auto 12px;
   border:3px solid rgba(255,92,0,.3);
-  font-family:'Syne',sans-serif;position:relative;z-index:1;cursor:pointer;
-  box-shadow: 0 0 24px rgba(255,92,0,.25);
+  font-family:'Syne',sans-serif;
+  box-shadow:0 0 24px rgba(255,92,0,.25);
 }
-.pname { font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);letter-spacing:-.5px;margin-bottom:3px;position:relative;z-index:1; }
-.phand { font-size:13px;color:var(--ink3);margin-bottom:16px;position:relative;z-index:1; }
+.av-cam {
+  position:absolute;bottom:0;right:0;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--brand);border:2px solid var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;
+}
 
-/* Nivel y puntos */
+.pname  { font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);letter-spacing:-.5px;margin-bottom:2px;position:relative;z-index:1; }
+.phandle { font-size:13px;color:var(--brand);font-weight:600;margin-bottom:2px;position:relative;z-index:1; }
+.ploc   { font-size:12px;color:var(--ink3);margin-bottom:16px;position:relative;z-index:1; }
+
+/* Nivel */
 .level-bar-wrap { position:relative;z-index:1;margin:0 auto 16px;max-width:280px; }
 .level-info { display:flex;justify-content:space-between;align-items:center;margin-bottom:6px; }
-.level-badge {
-  background:var(--brand-bg);color:var(--brand);
-  font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;
-}
+.level-badge { background:var(--brand-bg);color:var(--brand);font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px; }
 .level-pts { font-size:12px;color:var(--ink3);font-weight:600; }
 .level-bar { height:6px;background:var(--surface3);border-radius:4px;overflow:hidden; }
 .level-fill { height:100%;background:linear-gradient(90deg,var(--brand),#FF9500);border-radius:4px;transition:width .6s ease; }
 
-/* Stats */
+/* Body */
 .pbody { padding:20px; }
-@media(min-width:768px){ .pbody{padding:28px 40px;display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start;} }
+@media(min-width:768px){ .pbody{padding:28px 40px;display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start;} }
 
+/* Stats */
 .pstats { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px; }
-.psc {
-  background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);
-  padding:16px 12px;text-align:center;position:relative;overflow:hidden;
-}
+.psc { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:16px 12px;text-align:center;position:relative;overflow:hidden; }
 .psc::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--brand-bg),transparent); }
 .psnum { font-family:'Syne',sans-serif;font-size:24px;color:var(--brand);margin-bottom:3px;position:relative; }
 .pslbl { font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;position:relative; }
@@ -61,84 +66,66 @@
 
 /* Logros */
 .achievements-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
-@media(min-width:480px){ .achievements-grid { grid-template-columns:repeat(3,1fr); } }
-@media(min-width:768px){ .achievements-grid { grid-template-columns:repeat(2,1fr); } }
-
-.ach-card {
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--rmd);padding:14px;
-  display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
-  transition:all .2s;position:relative;overflow:hidden;
-}
+@media(min-width:480px){ .achievements-grid{grid-template-columns:repeat(3,1fr);} }
+.ach-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--rmd);padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;transition:all .2s;position:relative;overflow:hidden; }
 .ach-card.unlocked { border-color:var(--brand);background:var(--brand-bg); }
-.ach-card.unlocked::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--brand-bg),transparent); }
-.ach-card.locked { opacity:.45;filter:grayscale(.8); }
+.ach-card.locked { opacity:.4;filter:grayscale(.8); }
 .ach-ico { font-size:28px;position:relative;z-index:1; }
 .ach-name { font-size:12px;font-weight:700;color:var(--ink);position:relative;z-index:1; }
 .ach-desc { font-size:10px;color:var(--ink3);line-height:1.4;position:relative;z-index:1; }
-.ach-pts { font-size:10px;font-weight:700;color:var(--brand);position:relative;z-index:1; }
+.ach-pts  { font-size:10px;font-weight:700;color:var(--brand);position:relative;z-index:1; }
 .ach-check { position:absolute;top:8px;right:8px;font-size:14px; }
 
-/* Mis reseñas */
-.rmine {
-  background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);
-  padding:14px 16px;display:flex;gap:12px;align-items:center;
-  cursor:pointer;transition:all .15s;text-decoration:none;margin-bottom:10px;
-}
+/* Reseñas */
+.rmine { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:all .15s;text-decoration:none;margin-bottom:10px; }
 .rmine:hover { border-color:var(--brand);box-shadow:var(--sh-sm); }
 
 /* Favoritos */
 .fav-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
-.fav-card {
-  background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);
-  padding:14px;cursor:pointer;text-decoration:none;transition:all .15s;
-}
+.fav-card { background:var(--surface);border-radius:var(--rmd);border:1px solid var(--border);padding:14px;cursor:pointer;text-decoration:none;transition:all .15s; }
 .fav-card:hover { border-color:var(--brand);box-shadow:var(--sh-sm); }
 
-/* Menú */
-.menulist { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);overflow:hidden; }
-.mitem {
-  display:flex;align-items:center;gap:12px;padding:15px 18px;
-  border-bottom:1px solid var(--border);cursor:pointer;font-size:14px;
-  font-weight:600;transition:background .15s;color:var(--ink2);text-decoration:none;
-}
+/* Menu cuenta */
+.menulist { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);overflow:hidden;margin-bottom:12px; }
+.mitem { display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;font-size:14px;font-weight:600;transition:background .15s;color:var(--ink2);text-decoration:none; }
 .mitem:last-child { border-bottom:none; }
 .mitem:hover { background:var(--surface2); }
 .mitem .mic { font-size:20px;width:28px;text-align:center; }
-.mitem .mar { margin-left:auto;color:var(--ink3); }
+.mitem .mar { margin-left:auto;color:var(--ink3);font-size:13px; }
 .mitem.danger { color:var(--red); }
+.mitem .mbadge { margin-left:auto;background:var(--brand);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px; }
 
 /* Toast */
-.toast {
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--surface3);color:var(--ink);padding:12px 24px;
-  border-radius:var(--rmd);font-size:14px;font-weight:600;
-  opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;
-  box-shadow:var(--sh-md);border:1px solid var(--border2);
-}
+.toast { position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface3);color:var(--ink);padding:12px 24px;border-radius:var(--rmd);font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;box-shadow:var(--sh-md);border:1px solid var(--border2); }
 .toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
 
-/* Edit overlay */
-.edit-overlay { position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s; }
-.edit-overlay.open { opacity:1;pointer-events:all; }
-.edit-sheet { background:var(--surface);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:600px;padding:8px 24px 40px;max-height:90vh;overflow-y:auto;transform:translateY(40px);transition:transform .35s cubic-bezier(.4,0,.2,1);border:1px solid var(--border); }
-.edit-overlay.open .edit-sheet { transform:translateY(0); }
+/* Overlay genérico */
+.overlay { position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s; }
+.overlay.open { opacity:1;pointer-events:all; }
+.osheet { background:var(--surface);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:600px;padding:8px 24px 40px;max-height:92vh;overflow-y:auto;transform:translateY(40px);transition:transform .35s cubic-bezier(.4,0,.2,1);border:1px solid var(--border); }
+.overlay.open .osheet { transform:translateY(0); }
 .sheet-handle { width:44px;height:5px;background:var(--surface3);border-radius:3px;margin:10px auto 20px; }
+.sheet-title { font-family:'Syne',sans-serif;font-size:20px;margin-bottom:20px;color:var(--ink); }
 
-/* Achievement unlock animation */
-@keyframes achievementPop {
-  0% { transform:scale(0.5);opacity:0; }
-  70% { transform:scale(1.1); }
-  100% { transform:scale(1);opacity:1; }
-}
-.ach-toast {
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-  background:var(--surface);border:2px solid var(--brand);
-  border-radius:var(--rlg);padding:28px 32px;text-align:center;
-  z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(255,92,0,.2);
-  opacity:0;transition:all .3s;min-width:260px;
-}
-.ach-toast.show { opacity:1;transform:translate(-50%,-50%) scale(1);animation:achievementPop .4s ease; }
+/* Sección info en sheet */
+.info-section { background:var(--surface2);border-radius:var(--rmd);padding:16px;margin-bottom:14px;border:1px solid var(--border); }
+.info-section-title { font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px; }
+
+/* Notificaciones */
+.notif-item { display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border); }
+.notif-item:last-child { border-bottom:none; }
+.notif-info { flex:1; }
+.notif-label { font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px; }
+.notif-desc  { font-size:12px;color:var(--ink3); }
+.toggle { width:44px;height:24px;border-radius:12px;background:var(--surface3);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0; }
+.toggle.on { background:var(--brand); }
+.toggle::after { content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s; }
+.toggle.on::after { transform:translateX(20px); }
+
+/* Achievement popup */
+@keyframes achPop { 0%{transform:translate(-50%,-50%) scale(.5);opacity:0} 70%{transform:translate(-50%,-50%) scale(1.05)} 100%{transform:translate(-50%,-50%) scale(1);opacity:1} }
+.ach-toast { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:var(--surface);border:2px solid var(--brand);border-radius:var(--rlg);padding:28px 32px;text-align:center;z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(255,92,0,.2);opacity:0;transition:opacity .3s;min-width:260px; }
+.ach-toast.show { opacity:1;animation:achPop .4s ease forwards; }
 </style>
 </head>
 <body>
@@ -152,17 +139,21 @@
 </aside>
 
 <main class="main-with-sidebar page-content">
+
+  <!-- Hero -->
   <div class="phero">
     <div class="pb1"></div><div class="pb2"></div>
-    <div class="p-av" onclick="openEdit()" id="p-av">…</div>
-    <div class="pname" id="p-name">Cargando…</div>
-    <div class="phand" id="p-hand"></div>
-
-    <!-- Barra de nivel -->
+    <div class="av-wrap">
+      <div class="p-av" id="p-av">…</div>
+      <div class="av-cam" onclick="showToast('📸 Próximamente: subir foto')">📷</div>
+    </div>
+    <div class="pname"   id="p-name">Cargando…</div>
+    <div class="phandle" id="p-handle"></div>
+    <div class="ploc"    id="p-loc"></div>
     <div class="level-bar-wrap">
       <div class="level-info">
         <span class="level-badge" id="level-badge">Nivel 1</span>
-        <span class="level-pts" id="level-pts">0 pts</span>
+        <span class="level-pts"   id="level-pts">0 pts</span>
       </div>
       <div class="level-bar">
         <div class="level-fill" id="level-fill" style="width:0%"></div>
@@ -174,31 +165,22 @@
     <div>
       <!-- Stats -->
       <div class="pstats">
-        <div class="psc">
-          <div class="psnum" id="st-reviews">…</div>
-          <div class="pslbl">Reseñas</div>
-        </div>
-        <div class="psc">
-          <div class="psnum" id="st-points">…</div>
-          <div class="pslbl">Puntos</div>
-        </div>
-        <div class="psc">
-          <div class="psnum" id="st-achievements">…</div>
-          <div class="pslbl">Logros</div>
-        </div>
+        <div class="psc"><div class="psnum" id="st-reviews">…</div><div class="pslbl">Reseñas</div></div>
+        <div class="psc"><div class="psnum" id="st-points">…</div><div class="pslbl">Puntos</div></div>
+        <div class="psc"><div class="psnum" id="st-ach">…</div><div class="pslbl">Logros</div></div>
       </div>
 
       <!-- Logros -->
       <div class="psec">
         <h3>🏆 Mis logros</h3>
-        <div class="achievements-grid" id="achievements-grid">
+        <div class="achievements-grid" id="ach-grid">
           <div style="color:var(--ink3);font-size:14px;grid-column:span 2">Cargando…</div>
         </div>
       </div>
 
       <!-- Mis reseñas -->
       <div class="psec">
-        <h3>✍️ Mis últimas reseñas</h3>
+        <h3>✍️ Mis reseñas</h3>
         <div id="my-reviews"><div style="color:var(--ink3);font-size:14px">Cargando…</div></div>
       </div>
 
@@ -211,15 +193,18 @@
       </div>
     </div>
 
-    <!-- Columna derecha desktop -->
+    <!-- Columna derecha -->
     <div>
       <div class="psec">
         <h3>⚙️ Cuenta</h3>
         <div class="menulist">
-          <a class="mitem" href="#" onclick="openEdit()"><span class="mic">✏️</span>Editar perfil<span class="mar">›</span></a>
-          <a class="mitem" href="#"><span class="mic">🔔</span>Notificaciones<span class="mar">›</span></a>
-          <a class="mitem" href="#"><span class="mic">🎁</span>Invitar amigos<span class="mar">›</span></a>
-          <a class="mitem" href="#"><span class="mic">❓</span>Ayuda<span class="mar">›</span></a>
+          <a class="mitem" href="#" onclick="openSheet('edit')"><span class="mic">✏️</span>Editar perfil<span class="mar">›</span></a>
+          <a class="mitem" href="#" onclick="openSheet('notif')"><span class="mic">🔔</span>Notificaciones<span class="mbadge">3</span></a>
+          <a class="mitem" href="#" onclick="openSheet('help')"><span class="mic">❓</span>Ayuda<span class="mar">›</span></a>
+          <a class="mitem" href="#" onclick="openSheet('invite')"><span class="mic">🎁</span>Invitar amigos<span class="mar">›</span></a>
+          <a class="mitem" href="#" onclick="openSheet('privacy')"><span class="mic">🔒</span>Privacidad<span class="mar">›</span></a>
+        </div>
+        <div class="menulist">
           <a class="mitem danger" href="#" onclick="doSignOut()"><span class="mic">🚪</span>Cerrar sesión</a>
         </div>
       </div>
@@ -234,27 +219,189 @@
   <a class="ni active" href="perfil.html"><span class="ni-icon">👤</span><span>Perfil</span></a>
 </nav>
 
-<!-- Edit overlay -->
-<div class="edit-overlay" id="edit-overlay" onclick="closeEdit(event)">
-  <div class="edit-sheet">
+<!-- ── OVERLAY EDITAR PERFIL ── -->
+<div class="overlay" id="overlay-edit" onclick="closeSheet('edit',event)">
+  <div class="osheet">
     <div class="sheet-handle"></div>
-    <h2 style="font-family:'Syne',sans-serif;font-size:22px;margin-bottom:20px;color:var(--ink)">Editar perfil</h2>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="input-group"><label>Nombre</label><input class="input" id="ed-name" placeholder="Nombre"></div>
-        <div class="input-group"><label>Apellido</label><input class="input" id="ed-last" placeholder="Apellido"></div>
+    <div class="sheet-title">✏️ Editar perfil</div>
+
+    <div class="info-section">
+      <div class="info-section-title">Información personal</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="input-group"><label>Nombre</label><input class="input" id="ed-name" placeholder="Camila"></div>
+          <div class="input-group"><label>Apellido</label><input class="input" id="ed-last" placeholder="Torres"></div>
+        </div>
+        <div class="input-group"><label>Nombre de usuario</label>
+          <div class="input-icon"><span class="ico" style="color:var(--brand);font-style:normal;font-weight:700">@</span>
+          <input class="input" id="ed-handle" placeholder="camilatorres" style="padding-left:36px"></div>
+        </div>
+        <div class="input-group"><label>Teléfono</label>
+          <div class="input-icon"><span class="ico">📞</span>
+          <input class="input" id="ed-phone" placeholder="+56 9 1234 5678" type="tel"></div>
+        </div>
+        <div class="input-group"><label>Comuna</label>
+          <select class="input" id="ed-comuna">
+            <option value="">Selecciona tu comuna…</option>
+            <option>Santiago Centro</option><option>Providencia</option>
+            <option>Las Condes</option><option>Vitacura</option>
+            <option>Ñuñoa</option><option>Barrio Italia</option>
+            <option>La Florida</option><option>Maipú</option>
+            <option>San Miguel</option><option>La Reina</option>
+            <option>Lo Barnechea</option><option>Otra</option>
+          </select>
+        </div>
       </div>
-      <div class="input-group"><label>Bio</label>
-        <textarea class="input" id="ed-bio" rows="2" placeholder="Cuéntanos algo de ti…" style="resize:none"></textarea>
+    </div>
+
+    <div class="info-section">
+      <div class="info-section-title">Sobre ti</div>
+      <div class="input-group">
+        <label>Bio</label>
+        <textarea class="input" id="ed-bio" rows="3" placeholder="Cuéntanos algo de ti… ej: Amante del ramen y las burgers gourmet 🍜" style="resize:none"></textarea>
       </div>
-      <div id="edit-error" style="color:var(--red);font-size:13px;display:none"></div>
-      <button class="btn btn-primary btn-full" onclick="saveProfile()">Guardar cambios</button>
-      <button class="btn btn-ghost btn-full" onclick="closeEdit()">Cancelar</button>
+    </div>
+
+    <div id="edit-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none"></div>
+    <button class="btn btn-primary btn-full" id="btn-save" onclick="saveProfile()">Guardar cambios</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="closeSheet('edit')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ── OVERLAY NOTIFICACIONES ── -->
+<div class="overlay" id="overlay-notif" onclick="closeSheet('notif',event)">
+  <div class="osheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🔔 Notificaciones</div>
+    <div class="info-section">
+      <div class="info-section-title">Actividad</div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Reseñas marcadas como útiles</div>
+          <div class="notif-desc">Cuando alguien marque tu reseña como útil</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Nuevos logros</div>
+          <div class="notif-desc">Cuando desbloquees un nuevo logro</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Recordatorios de reseña</div>
+          <div class="notif-desc">Te recordamos reseñar locales que visitaste</div>
+        </div>
+        <button class="toggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+    <div class="info-section">
+      <div class="info-section-title">Novedades</div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Nuevos locales en tu zona</div>
+          <div class="notif-desc">Cuando abra un restaurante cerca tuyo</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Newsletter EasyFood</div>
+          <div class="notif-desc">Los mejores spots de Santiago cada semana</div>
+        </div>
+        <button class="toggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="showToast('✅ Preferencias guardadas');closeSheet('notif')">Guardar</button>
+  </div>
+</div>
+
+<!-- ── OVERLAY AYUDA ── -->
+<div class="overlay" id="overlay-help" onclick="closeSheet('help',event)">
+  <div class="osheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">❓ Ayuda</div>
+    <div class="info-section">
+      <div class="info-section-title">Preguntas frecuentes</div>
+      ${[
+        ['¿Cómo gano puntos?','Ganas 10 puntos por cada reseña que publiques. Los puntos desbloquean logros y suben tu nivel.'],
+        ['¿Cómo agrego un restaurante?','Por ahora los restaurantes los agrega el equipo de EasyFood. Próximamente los dueños podrán registrarlos.'],
+        ['¿Puedo editar mi reseña?','Actualmente no, pero lo tenemos en el roadmap. Por ahora puedes eliminarla y volver a escribirla.'],
+        ['¿Cómo funciona el mapa?','El mapa muestra todos los locales de Santiago. Activa tu ubicación para ver los más cercanos.'],
+      ].map(([q,a]) => `
+      <details style="padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer">
+        <summary style="font-size:14px;font-weight:600;color:var(--ink);list-style:none;display:flex;justify-content:space-between">
+          ${q} <span style="color:var(--brand)">+</span>
+        </summary>
+        <p style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.6">${a}</p>
+      </details>`).join('')}
+    </div>
+    <div class="info-section" style="text-align:center">
+      <div class="info-section-title">¿Necesitas más ayuda?</div>
+      <p style="font-size:13px;color:var(--ink3);margin-bottom:14px">Escríbenos y te respondemos en menos de 24 horas</p>
+      <button class="btn btn-primary btn-full" onclick="showToast('📧 Abriendo correo…')">✉️ Contactar soporte</button>
     </div>
   </div>
 </div>
 
-<!-- Achievement unlock popup -->
+<!-- ── OVERLAY INVITAR ── -->
+<div class="overlay" id="overlay-invite" onclick="closeSheet('invite',event)">
+  <div class="osheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🎁 Invitar amigos</div>
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:64px;margin-bottom:16px">🍔</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:22px;margin-bottom:8px;color:var(--ink)">Comparte EasyFood</h3>
+      <p style="font-size:14px;color:var(--ink3);line-height:1.7;margin-bottom:24px">
+        Invita a tus amigos a descubrir los mejores locales de Santiago.<br>
+        Próximamente: gana <strong style="color:var(--brand)">50 puntos</strong> por cada amigo que se registre.
+      </p>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rmd);padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+        <span style="flex:1;font-size:13px;color:var(--ink3);text-align:left" id="invite-link">easyfood.vercel.app/register?ref=IO</span>
+        <button class="btn btn-primary btn-sm" onclick="copyInvite()">Copiar</button>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary btn-full" onclick="shareWhatsapp()">📱 WhatsApp</button>
+        <button class="btn btn-secondary btn-full" onclick="shareIG()">📸 Instagram</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── OVERLAY PRIVACIDAD ── -->
+<div class="overlay" id="overlay-privacy" onclick="closeSheet('privacy',event)">
+  <div class="osheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🔒 Privacidad</div>
+    <div class="info-section">
+      <div class="info-section-title">Visibilidad</div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Perfil público</div>
+          <div class="notif-desc">Otros usuarios pueden ver tu perfil y reseñas</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="notif-item">
+        <div class="notif-info">
+          <div class="notif-label">Mostrar ubicación</div>
+          <div class="notif-desc">Mostrar tu comuna en el perfil</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+    <div class="info-section">
+      <div class="info-section-title">Datos</div>
+      <a class="mitem" href="#" style="border-radius:var(--rsm);padding:12px 0"><span class="mic">📥</span>Descargar mis datos<span class="mar">›</span></a>
+      <a class="mitem danger" href="#" onclick="showToast('⚠️ Contacta soporte para eliminar tu cuenta')" style="padding:12px 0"><span class="mic">🗑️</span>Eliminar cuenta</a>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="showToast('✅ Privacidad guardada');closeSheet('privacy')">Guardar</button>
+  </div>
+</div>
+
+<!-- Achievement popup -->
 <div class="ach-toast" id="ach-toast">
   <div style="font-size:48px;margin-bottom:12px" id="ach-toast-ico">🏆</div>
   <div style="font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">¡Logro desbloqueado!</div>
@@ -269,27 +416,26 @@ import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 const { data:{ session } } = await sb.auth.getSession();
 if (!session) { location.href='login.html'; }
-
 const uid = session.user.id;
 let profileData = null;
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg) {
+window.showToast = (msg) => {
   let t = document.getElementById('gt');
   if (!t) { t=document.createElement('div');t.id='gt';t.className='toast';document.body.appendChild(t); }
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 2800);
-}
+};
 
-// ── Achievement popup ─────────────────────────────────────────────────────────
-function showAchievement(ach) {
-  const toast = document.getElementById('ach-toast');
-  document.getElementById('ach-toast-ico').textContent  = ach.icon;
-  document.getElementById('ach-toast-name').textContent = ach.name;
-  document.getElementById('ach-toast-desc').textContent = ach.description;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
-}
+// ── Overlays ──────────────────────────────────────────────────────────────────
+window.openSheet = (id) => {
+  if (id==='edit') fillEditForm();
+  document.getElementById(`overlay-${id}`).classList.add('open');
+};
+window.closeSheet = (id, e) => {
+  if (!e || e.target===document.getElementById(`overlay-${id}`))
+    document.getElementById(`overlay-${id}`).classList.remove('open');
+};
 
 // ── Cargar perfil ─────────────────────────────────────────────────────────────
 async function loadProfile() {
@@ -298,29 +444,28 @@ async function loadProfile() {
   const name = data?.name || session.user.user_metadata?.name || session.user.email;
   const initials = name?.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || '👤';
 
-  document.getElementById('p-av').textContent   = initials;
-  document.getElementById('p-name').textContent = name || '—';
-  document.getElementById('p-hand').textContent = data?.handle || session.user.email;
+  document.getElementById('p-av').textContent     = initials;
+  document.getElementById('p-name').textContent   = name || '—';
+  document.getElementById('p-handle').textContent = data?.handle ? `@${data.handle.replace('@','')}` : '';
+  document.getElementById('p-loc').textContent    = data?.bio || '';
   document.getElementById('st-points').textContent = data?.points || 0;
 
-  // Barra de nivel
   const pts   = data?.points || 0;
   const level = data?.level  || 1;
-  const ptsInLevel    = pts % 100;
-  const ptsNextLevel  = 100;
-  const pct = Math.min(100, Math.round(ptsInLevel / ptsNextLevel * 100));
-
+  const pct   = Math.min(100, (pts % 100));
   document.getElementById('level-badge').textContent = `Nivel ${level}`;
-  document.getElementById('level-pts').textContent   = `${pts} pts · próximo nivel: ${ptsNextLevel - ptsInLevel} pts`;
+  document.getElementById('level-pts').textContent   = `${pts} pts · faltan ${100-(pts%100)} para nivel ${level+1}`;
   document.getElementById('level-fill').style.width  = pct + '%';
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 async function loadStats() {
-  const { count: rvCount } = await sb.from('reviews').select('*',{count:'exact',head:true}).eq('user_id',uid);
-  const { count: achCount } = await sb.from('user_achievements').select('*',{count:'exact',head:true}).eq('user_id',uid);
-  document.getElementById('st-reviews').textContent      = rvCount || 0;
-  document.getElementById('st-achievements').textContent = `${achCount||0}/10`;
+  const [{ count: rvCount }, { count: achCount }] = await Promise.all([
+    sb.from('reviews').select('*',{count:'exact',head:true}).eq('user_id',uid),
+    sb.from('user_achievements').select('*',{count:'exact',head:true}).eq('user_id',uid),
+  ]);
+  document.getElementById('st-reviews').textContent = rvCount||0;
+  document.getElementById('st-ach').textContent     = `${achCount||0}/10`;
 }
 
 // ── Logros ────────────────────────────────────────────────────────────────────
@@ -329,111 +474,120 @@ async function loadAchievements() {
     sb.from('achievements').select('*').order('points_required'),
     sb.from('user_achievements').select('achievement_id').eq('user_id', uid)
   ]);
-
-  const unlockedIds = new Set((unlocked||[]).map(u => u.achievement_id));
-  const grid = document.getElementById('achievements-grid');
-
-  grid.innerHTML = (all||[]).map(a => {
-    const isUnlocked = unlockedIds.has(a.id);
-    return `
-    <div class="ach-card ${isUnlocked ? 'unlocked' : 'locked'}">
-      ${isUnlocked ? '<span class="ach-check">✅</span>' : ''}
+  const uIds = new Set((unlocked||[]).map(u=>u.achievement_id));
+  document.getElementById('ach-grid').innerHTML = (all||[]).map(a => {
+    const ok = uIds.has(a.id);
+    return `<div class="ach-card ${ok?'unlocked':'locked'}">
+      ${ok?'<span class="ach-check">✅</span>':''}
       <div class="ach-ico">${a.icon}</div>
       <div class="ach-name">${a.name}</div>
       <div class="ach-desc">${a.description}</div>
-      ${!isUnlocked ? `<div class="ach-pts">${a.points_required} pts</div>` : ''}
+      ${!ok?`<div class="ach-pts">${a.points_required} pts</div>`:''}
     </div>`;
   }).join('');
 }
 
-// ── Mis reseñas ───────────────────────────────────────────────────────────────
+// ── Reseñas ───────────────────────────────────────────────────────────────────
 async function loadMyReviews() {
   const { data } = await sb.from('reviews')
-    .select('*, restaurants(id,name,icon,ri_class)')
+    .select('*, restaurants(id,name,icon)')
     .eq('user_id', uid).order('created_at',{ascending:false}).limit(5);
-  const el = document.getElementById('my-reviews');
-  el.innerHTML = data?.length ? data.map(r => {
-    const fecha = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short'});
-    return `<a class="rmine" href="restaurante.html?id=${r.restaurants?.id}">
-      <div style="width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--surface2)">${r.restaurants?.icon||'🍽️'}</div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:700;margin-bottom:2px;color:var(--ink)">${r.restaurants?.name||'—'}</div>
-        <div style="font-size:12px;color:var(--ink3)">${fecha} · <span style="color:var(--brand)">${'★'.repeat(r.rating)}</span> · +10 pts</div>
-      </div>
-      <span style="color:var(--ink3);font-size:20px">›</span>
-    </a>`;
-  }).join('')
-  : '<p style="color:var(--ink3);font-size:14px">Aún no has escrito reseñas.<br>¡Escribe una y gana 10 puntos!</p>';
+  document.getElementById('my-reviews').innerHTML = data?.length
+    ? data.map(r => {
+      const fecha = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short'});
+      return `<a class="rmine" href="restaurante.html?id=${r.restaurants?.id}">
+        <div style="width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--surface2)">${r.restaurants?.icon||'🍽️'}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--ink)">${r.restaurants?.name||'—'}</div>
+          <div style="font-size:12px;color:var(--ink3)">${fecha} · <span style="color:var(--brand)">${'★'.repeat(r.rating)}</span> · +10 pts</div>
+        </div>
+        <span style="color:var(--ink3)">›</span>
+      </a>`;}).join('')
+    : '<p style="color:var(--ink3);font-size:14px">Aún no has escrito reseñas. ¡Escribe una y gana 10 puntos!</p>';
 }
 
 // ── Favoritos ─────────────────────────────────────────────────────────────────
 async function loadFavs() {
   const { data } = await sb.from('favorites')
-    .select('restaurants(id,name,icon,comunas(name))')
-    .eq('user_id', uid);
-  const list = data?.map(f=>f.restaurants).filter(Boolean) || [];
-  const el = document.getElementById('fav-grid');
-  el.innerHTML = list.length ? list.map(r => `
-    <a class="fav-card" href="restaurante.html?id=${r.id}">
-      <div style="font-size:24px;margin-bottom:6px">${r.icon||'🍽️'}</div>
-      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px">${r.name}</div>
-      <div style="font-size:11px;color:var(--ink3)">${r.comunas?.name||''}</div>
-    </a>`).join('')
-  : '<p style="color:var(--ink3);font-size:14px;grid-column:span 2">Aún no tienes favoritos. ❤️</p>';
+    .select('restaurants(id,name,icon,comunas(name))').eq('user_id', uid);
+  const list = data?.map(f=>f.restaurants).filter(Boolean)||[];
+  document.getElementById('fav-grid').innerHTML = list.length
+    ? list.map(r=>`<a class="fav-card" href="restaurante.html?id=${r.id}">
+        <div style="font-size:24px;margin-bottom:6px">${r.icon||'🍽️'}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px">${r.name}</div>
+        <div style="font-size:11px;color:var(--ink3)">${r.comunas?.name||''}</div>
+      </a>`).join('')
+    : '<p style="color:var(--ink3);font-size:14px;grid-column:span 2">Aún no tienes favoritos. ❤️</p>';
 }
 
-// ── Edit perfil ───────────────────────────────────────────────────────────────
-window.openEdit = () => {
+// ── Editar perfil ─────────────────────────────────────────────────────────────
+function fillEditForm() {
   const name = (profileData?.name||'').split(' ');
-  document.getElementById('ed-name').value = name[0]||'';
-  document.getElementById('ed-last').value = name.slice(1).join(' ')||'';
-  document.getElementById('ed-bio').value  = profileData?.bio||'';
-  document.getElementById('edit-overlay').classList.add('open');
-};
-window.closeEdit = (e) => {
-  if (!e || e.target===document.getElementById('edit-overlay'))
-    document.getElementById('edit-overlay').classList.remove('open');
-};
+  document.getElementById('ed-name').value   = name[0]||'';
+  document.getElementById('ed-last').value   = name.slice(1).join(' ')||'';
+  document.getElementById('ed-handle').value = (profileData?.handle||'').replace('@','');
+  document.getElementById('ed-bio').value    = profileData?.bio||'';
+  document.getElementById('ed-phone').value  = profileData?.phone||'';
+}
+
 window.saveProfile = async () => {
   const name   = (document.getElementById('ed-name').value+' '+document.getElementById('ed-last').value).trim();
+  const handle = document.getElementById('ed-handle').value.trim().replace('@','').toLowerCase().replace(/\s+/g,'');
   const bio    = document.getElementById('ed-bio').value.trim();
-  const handle = '@'+name.toLowerCase().replace(/\s+/g,'');
-  const { error } = await sb.from('profiles').update({name,bio,handle}).eq('id',uid);
-  if (error) { document.getElementById('edit-error').textContent=error.message; document.getElementById('edit-error').style.display='block'; return; }
-  window.closeEdit();
+  const phone  = document.getElementById('ed-phone').value.trim();
+  const errEl  = document.getElementById('edit-error');
+  errEl.style.display='none';
+
+  if (!name) { errEl.textContent='El nombre es obligatorio'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('btn-save');
+  btn.textContent='Guardando…'; btn.disabled=true;
+
+  const { error } = await sb.from('profiles').update({ name, handle, bio, phone }).eq('id', uid);
+  btn.textContent='Guardar cambios'; btn.disabled=false;
+
+  if (error) { errEl.textContent=error.message; errEl.style.display='block'; return; }
+  closeSheet('edit');
   showToast('✅ Perfil actualizado');
   loadProfile();
 };
 
-// ── Cerrar sesión ─────────────────────────────────────────────────────────────
-window.doSignOut = async () => {
-  await sb.auth.signOut();
-  location.href = 'login.html';
+// ── Invitar ───────────────────────────────────────────────────────────────────
+window.copyInvite = () => {
+  navigator.clipboard?.writeText(document.getElementById('invite-link').textContent);
+  showToast('🔗 Link copiado');
 };
+window.shareWhatsapp = () => {
+  window.open(`https://wa.me/?text=Descubre los mejores restaurantes de Santiago en EasyFood 🍔 ${document.getElementById('invite-link').textContent}`);
+};
+window.shareIG = () => showToast('📸 Copia el link y compártelo en tu historia');
 
-// ── Escuchar nuevos logros en tiempo real ─────────────────────────────────────
-sb.channel('achievements')
-  .on('postgres_changes', {
-    event: 'INSERT', schema: 'public', table: 'user_achievements',
-    filter: `user_id=eq.${uid}`
-  }, async (payload) => {
-    const { data: ach } = await sb.from('achievements')
-      .select('*').eq('id', payload.new.achievement_id).single();
-    if (ach) {
-      showAchievement(ach);
-      loadAchievements();
-      loadStats();
-      loadProfile();
-    }
-  })
-  .subscribe();
+// ── Cerrar sesión ─────────────────────────────────────────────────────────────
+window.doSignOut = async () => { await sb.auth.signOut(); location.href='login.html'; };
+
+// ── Achievement popup ─────────────────────────────────────────────────────────
+function showAchievement(ach) {
+  document.getElementById('ach-toast-ico').textContent  = ach.icon;
+  document.getElementById('ach-toast-name').textContent = ach.name;
+  document.getElementById('ach-toast-desc').textContent = ach.description;
+  const t = document.getElementById('ach-toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── Realtime logros ───────────────────────────────────────────────────────────
+sb.channel('ach').on('postgres_changes',{
+  event:'INSERT',schema:'public',table:'user_achievements',filter:`user_id=eq.${uid}`
+}, async (p) => {
+  const { data: a } = await sb.from('achievements').select('*').eq('id',p.new.achievement_id).single();
+  if (a) { showAchievement(a); loadAchievements(); loadStats(); loadProfile(); }
+}).subscribe();
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-loadProfile();
-loadStats();
-loadAchievements();
-loadMyReviews();
-loadFavs();
+// Agregar phone a profiles si no existe
+await sb.rpc || null;
+
+loadProfile(); loadStats(); loadAchievements(); loadMyReviews(); loadFavs();
 </script>
 </body>
 </html>
