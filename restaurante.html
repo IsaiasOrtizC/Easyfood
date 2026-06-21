@@ -92,13 +92,33 @@
       <div class="info-card" id="info-card"><div style="color:var(--ink3);text-align:center;padding:20px">Cargando…</div></div>
 
       <div class="review-form" id="review-form" style="display:none">
-        <h3 style="font-family:'Syne',sans-serif;font-size:18px;letter-spacing:-.3px;margin-bottom:16px">✏️ Escribe una reseña</h3>
+        <h3>✏️ Escribe una reseña</h3>
         <div class="star-picker" id="star-picker"></div>
         <div class="input-group" style="margin-bottom:12px">
           <textarea class="input" id="rev-text" rows="3" placeholder="¿Cómo fue tu experiencia? (mín. 20 caracteres)" style="resize:none"></textarea>
         </div>
+
+        <!-- Verificación con boleta/QR -->
+        <div style="background:var(--surface2);border:1.5px dashed var(--border2);border-radius:var(--rmd);padding:16px;margin-bottom:14px;cursor:pointer" onclick="document.getElementById('receipt-input').click()" id="receipt-zone">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:28px">🧾</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px">Verificar con boleta o QR <span class="pill pill-green" style="font-size:10px">+20 pts</span></div>
+              <div style="font-size:12px;color:var(--ink3)">Sube foto de tu boleta o código QR para verificar tu visita y ganar puntos extra</div>
+            </div>
+          </div>
+          <div id="receipt-preview" style="display:none;margin-top:12px">
+            <img id="receipt-img" style="width:100%;max-height:160px;object-fit:cover;border-radius:var(--rsm);border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <span style="font-size:12px;color:var(--green);font-weight:600">✅ Foto lista para subir</span>
+              <button onclick="removeReceipt(event)" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:600">Eliminar</button>
+            </div>
+          </div>
+        </div>
+        <input type="file" id="receipt-input" accept="image/*" style="display:none" onchange="handleReceiptChange(event)">
+
         <div id="rev-error" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
-        <button class="btn btn-primary" id="btn-review" onclick="window._submitReview()">Publicar reseña</button>
+        <button class="btn btn-primary btn-full" id="btn-review" onclick="window._submitReview()">Publicar reseña</button>
       </div>
 
       <div class="sechdr" style="margin-top:4px">
@@ -265,13 +285,25 @@ async function loadReviews() {
     return `<div class="rcard">
       <div class="rhdr">
         <div class="avatar av-md av-a">${ini}</div>
-        <div style="flex:1"><div style="font-size:14px;font-weight:700">${n}</div>
-        <div style="font-size:12px;color:var(--ink3)">${fecha}</div></div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px">
+            ${n}
+            ${r.is_verified ? '<span class="pill pill-green" style="font-size:10px">✅ Verificado</span>' : ''}
+          </div>
+          <div style="font-size:12px;color:var(--ink3)">${fecha}</div>
+        </div>
         <div style="color:var(--brand)">${'★'.repeat(r.rating)}</div>
       </div>
       <p class="rtxt">${r.text}</p>
+      ${r.receipt_url ? `
+      <div style="margin-bottom:12px">
+        <img src="${r.receipt_url}" alt="Boleta verificada" 
+          style="max-width:100%;max-height:120px;object-fit:cover;border-radius:var(--rsm);border:1px solid var(--border);cursor:pointer"
+          onclick="window.open('${r.receipt_url}','_blank')">
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">🧾 Boleta verificada</div>
+      </div>` : ''}
       <div class="ract">
-        <button class="btnh">👍 Útil (${r.useful_count||0})</button>
+        <button class="btnh" onclick="markUseful(this,'${r.id}',${r.useful_count||0})">👍 Útil (${r.useful_count||0})</button>
       </div>
     </div>`}).join('');
 }
@@ -288,28 +320,92 @@ for (let i=1;i<=5;i++){
 }
 
 // ── Publicar reseña ───────────────────────────────────────────────────────────
+// ── Receipt upload ────────────────────────────────────────────────────────────
+let receiptFile = null;
+
+window.handleReceiptChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ La imagen debe pesar menos de 5MB'); return; }
+  receiptFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('receipt-img').src = ev.target.result;
+    document.getElementById('receipt-preview').style.display = 'block';
+    document.getElementById('receipt-zone').style.borderColor = 'var(--green)';
+    document.getElementById('receipt-zone').style.background = 'var(--green-bg)';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeReceipt = (e) => {
+  e.stopPropagation();
+  receiptFile = null;
+  document.getElementById('receipt-input').value = '';
+  document.getElementById('receipt-preview').style.display = 'none';
+  document.getElementById('receipt-zone').style.borderColor = 'var(--border2)';
+  document.getElementById('receipt-zone').style.background = 'var(--surface2)';
+};
+
 window._submitReview = async () => {
-  const txt = document.getElementById('rev-text').value.trim();
+  const txt   = document.getElementById('rev-text').value.trim();
   const errEl = document.getElementById('rev-error');
-  errEl.style.display='none';
-  if (!selectedStars){ errEl.textContent='Selecciona una puntuación'; errEl.style.display='block'; return; }
-  if (txt.length<20){ errEl.textContent='Escribe al menos 20 caracteres'; errEl.style.display='block'; return; }
-  document.getElementById('btn-review').textContent='Publicando…';
-  document.getElementById('btn-review').disabled=true;
+  errEl.style.display = 'none';
+
+  if (!selectedStars) { errEl.textContent='Selecciona una puntuación'; errEl.style.display='block'; return; }
+  if (txt.length < 20) { errEl.textContent='Escribe al menos 20 caracteres'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('btn-review');
+  btn.textContent = 'Publicando…'; btn.disabled = true;
+
+  let receiptUrl  = null;
+  let isVerified  = false;
+
+  // Subir boleta si existe
+  if (receiptFile) {
+    btn.textContent = 'Subiendo foto…';
+    const ext  = receiptFile.name.split('.').pop();
+    const path = `receipts/${session.user.id}/${rid}_${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from('receipts').upload(path, receiptFile);
+    if (!upErr) {
+      const { data: urlData } = sb.storage.from('receipts').getPublicUrl(path);
+      receiptUrl = urlData.publicUrl;
+      isVerified = true;
+    }
+  }
+
+  btn.textContent = 'Publicando…';
   const { error } = await sb.from('reviews').insert({
     restaurant_id: rid,
-    user_id: session.user.id,
-    rating: selectedStars,
-    text: txt
+    user_id:       session.user.id,
+    rating:        selectedStars,
+    text:          txt,
+    receipt_url:   receiptUrl,
+    is_verified:   isVerified,
   });
-  document.getElementById('btn-review').textContent='Publicar reseña';
-  document.getElementById('btn-review').disabled=false;
-  if (error){ errEl.textContent=error.message; errEl.style.display='block'; return; }
-  document.getElementById('rev-text').value='';
-  selectedStars=0;
-  document.querySelectorAll('.sp').forEach(el=>el.classList.remove('lit'));
-  showToast('✅ ¡Reseña publicada!');
+
+  btn.textContent = 'Publicar reseña'; btn.disabled = false;
+  if (error) { errEl.textContent=error.message; errEl.style.display='block'; return; }
+
+  // Limpiar form
+  document.getElementById('rev-text').value = '';
+  selectedStars = 0;
+  document.querySelectorAll('.sp').forEach(el => el.classList.remove('lit'));
+  window.removeReceipt({ stopPropagation: ()=>{} });
+
+  showToast(isVerified ? '✅ ¡Reseña verificada publicada! +30 pts' : '✅ ¡Reseña publicada! +10 pts');
   loadReviews();
+};
+
+// ── Marcar útil ──────────────────────────────────────────────────────────────
+window.markUseful = async (btn, reviewId, current) => {
+  btn.disabled = true;
+  const newCount = current + 1;
+  await sb.from('reviews').update({ useful_count: newCount }).eq('id', reviewId);
+  btn.textContent = `👍 Útil (${newCount})`;
+  btn.style.color = 'var(--brand)';
+  btn.style.borderColor = 'var(--brand)';
+  showToast('👍 Marcado como útil');
 };
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
