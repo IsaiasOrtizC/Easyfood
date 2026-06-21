@@ -8,46 +8,52 @@
 <link rel="stylesheet" href="shared.css">
 <style>
 .page-content { padding-bottom:80px; }
-.rhero { background:var(--ink);padding:56px 20px 32px;position:relative;overflow:hidden; }
+.rhero { background:var(--surface);padding:56px 20px 32px;position:relative;overflow:hidden;border-bottom:1px solid var(--border); }
 @media(min-width:768px){ .rhero{padding:40px 40px 32px;} }
-.rh-blob { position:absolute;top:-50px;right:-50px;width:250px;height:250px;border-radius:50%;opacity:.18; }
-.rh-top { display:flex;align-items:center;gap:12px;margin-bottom:24px;position:relative;z-index:1; }
-.rh-ico-big { width:72px;height:72px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0; }
+.rh-blob { position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:var(--brand);opacity:.07;filter:blur(60px); }
+.rh-top { display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;z-index:1; }
+.rh-ico-big { width:72px;height:72px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;background:var(--surface2);border:1px solid var(--border); }
+.rh-ico-big img { width:100%;height:100%;object-fit:contain;padding:6px; }
 .rh-info { flex:1; }
-.rh-name { font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,30px);color:#fff;letter-spacing:-.8px;margin-bottom:4px; }
-.rh-sub  { font-size:13px;color:rgba(255,255,255,.55);line-height:1.5; }
+.rh-name { font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,30px);color:var(--ink);letter-spacing:-.8px;margin-bottom:4px; }
+.rh-sub  { font-size:13px;color:var(--ink3);line-height:1.5; }
 .rh-row { display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1; }
-.rh-stat { background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:10px 16px;text-align:center;flex:1;min-width:80px; }
-.rh-stat .n { font-family:'Syne',sans-serif;font-size:20px;color:#fff; }
-.rh-stat .l { font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
-.actions-bar { display:flex;gap:10px;padding:16px 20px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border-bottom:1px solid var(--border); }
+.rh-stat { background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 16px;text-align:center;flex:1;min-width:80px; }
+.rh-stat .n { font-family:'Syne',sans-serif;font-size:20px;color:var(--brand); }
+.rh-stat .l { font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+.actions-bar { display:flex;gap:10px;padding:14px 20px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border-bottom:1px solid var(--border); }
 .actions-bar::-webkit-scrollbar { display:none; }
-.act-btn { flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;border-radius:var(--rsm);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:11px;font-weight:600;color:var(--ink2);transition:all .15s;font-family:inherit; }
-.act-btn:hover { border-color:var(--brand);color:var(--brand); }
+.act-btn { flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;border-radius:var(--rsm);border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;font-size:11px;font-weight:600;color:var(--ink2);transition:all .15s;font-family:inherit;text-decoration:none; }
+.act-btn:hover { border-color:var(--brand);color:var(--brand);background:var(--brand-bg); }
 .act-btn .act-ico { font-size:20px; }
-.rbody { padding:20px; }
-@media(min-width:768px){ .rbody{padding:28px 40px;display:grid;grid-template-columns:1fr 360px;gap:32px;} }
+.rbody { padding:20px;background:var(--bg); }
+@media(min-width:768px){ .rbody{padding:28px 40px;display:grid;grid-template-columns:1fr 360px;gap:32px;background:var(--bg);} }
 .info-card { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:20px;margin-bottom:20px; }
 .info-row { display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border); }
 .info-row:last-child { border-bottom:none; }
 .info-ico { font-size:18px;width:24px;text-align:center;flex-shrink:0; }
 .info-text { font-size:14px;color:var(--ink2);flex:1; }
+.info-text strong { color:var(--ink); }
+.info-text a { color:var(--brand);text-decoration:none;font-weight:600; }
 .rating-box { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:20px;margin-bottom:20px; }
+.rating-box h3 { font-family:'Syne',sans-serif;font-size:17px;color:var(--ink);margin-bottom:16px; }
 .big-rating { display:flex;gap:20px;align-items:center;margin-bottom:16px; }
 .big-num { font-family:'Syne',sans-serif;font-size:52px;color:var(--brand);line-height:1; }
+.big-num-sub { color:var(--ink3);font-size:12px;margin-top:4px; }
 .rev-grid { display:flex;flex-direction:column;gap:14px; }
-.rcard { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:18px;transition:box-shadow .18s; }
-.rcard:hover { box-shadow:var(--sh-md); }
+.rcard { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:18px;transition:all .18s; }
+.rcard:hover { border-color:var(--border2);box-shadow:var(--sh-md); }
 .rhdr { display:flex;align-items:center;gap:12px;margin-bottom:10px; }
 .rtxt { font-size:14px;color:var(--ink2);line-height:1.65;margin-bottom:12px; }
 .ract { display:flex;gap:8px; }
-.btnh { font-size:12px;font-weight:600;font-family:inherit;color:var(--ink2);background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s; }
+.btnh { font-size:12px;font-weight:600;font-family:inherit;color:var(--ink2);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s; }
 .btnh:hover { background:var(--brand-bg);color:var(--brand);border-color:var(--brand); }
 .review-form { background:var(--surface);border-radius:var(--rlg);border:1px solid var(--border);padding:22px;margin-bottom:20px; }
+.review-form h3 { font-family:'Syne',sans-serif;font-size:17px;color:var(--ink);margin-bottom:16px; }
 .star-picker { display:flex;gap:6px;margin-bottom:16px; }
-.sp { font-size:32px;cursor:pointer;transition:transform .15s;filter:grayscale(1);opacity:.4; }
-.sp.lit { filter:none;opacity:1; }
-.bar-track { flex:1;height:7px;background:var(--bg2);border-radius:4px;overflow:hidden; }
+.sp { font-size:32px;cursor:pointer;transition:transform .15s;filter:grayscale(1);opacity:.3; }
+.sp.lit { filter:none;opacity:1;transform:scale(1.1); }
+.bar-track { flex:1;height:6px;background:var(--surface3);border-radius:4px;overflow:hidden; }
 .bar-fill  { height:100%;background:var(--brand);border-radius:4px; }
 </style>
 </head>
@@ -66,7 +72,7 @@
     <div class="rh-blob" id="rh-blob" style="background:var(--brand)"></div>
     <div style="position:relative;z-index:1">
       <div style="margin-bottom:16px">
-        <a href="index.html" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">← Volver</a>
+        <a href="index.html" style="color:var(--ink3);font-size:14px;font-weight:600;text-decoration:none">← Volver</a>
       </div>
       <div class="rh-top">
         <div class="rh-ico-big" id="rh-ico">🍽️</div>
@@ -151,8 +157,11 @@ async function loadResto() {
   resto = data;
 
   document.title = `EasyFood — ${resto.name}`;
-  document.getElementById('rh-ico').textContent = resto.icon||'🍽️';
-  document.getElementById('rh-ico').className = `rh-ico-big ${resto.ri_class||'ri-bur'}`;
+  const slug5 = resto.categories?.slug || 'chilena';
+  const SVG_MAP5 = { burger:'Hamburger-bro.svg',pizza:'Pizza_sharing-bro.svg',ramen:'Ramen-amico.svg',sushi:'Poke_bowl-rafiki.svg',seafood:'Poke_bowl-rafiki.svg',healthy:'fruit_salad-pana.svg',chilena:'moai-chile.svg',coffee:'fruit_salad-pana.svg',parrilla:'food-meat.svg',bar:'moai-chile.svg' };
+  const icoEl = document.getElementById('rh-ico');
+  icoEl.className = 'rh-ico-big';
+  icoEl.innerHTML = `<img src="${SVG_MAP5[slug5]||'moai-chile.svg'}" alt="${resto.name}">`;
   document.getElementById('rh-name').textContent = resto.name;
   document.getElementById('rh-sub').textContent =
     `${resto.comunas?.name||''} · ${'$'.repeat(resto.price_level||2)} · ${resto.hours||''}`;
