@@ -207,25 +207,45 @@ async function loadReviews() {
   }
 
   grid.innerHTML = list.map(r => {
-    const nombre = r.profiles?.name || 'Usuario';
-    const ini = nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const fecha = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
-    const resto = r.restaurants;
+    const nombre   = r.profiles?.name || 'Usuario';
+    const userId   = r.profiles?.id || '';
+    const handle   = r.profiles?.handle || '';
+    const nivel    = r.profiles?.level || 1;
+    const avatarUrl= r.profiles?.avatar_url || '';
+    const ini      = nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const fecha    = new Date(r.created_at).toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'});
+    const resto    = r.restaurants;
+    const verified = r.is_verified && r.receipt_url;
+
+    const avatarHTML = avatarUrl
+      ? `<img src="${avatarUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`
+      : `<div class="avatar av-md av-a">${ini}</div>`;
+
     return `
-    <div class="rcard">
+    <div class="rcard ${verified ? 'rcard-verified' : ''}">
+      ${verified ? '<div class="verified-banner">✅ Reseña verificada con boleta</div>' : ''}
       <div class="rhdr">
-        <div class="avatar av-md av-a">${ini}</div>
-        <div style="flex:1">
-          <div style="font-size:14px;font-weight:700">${nombre}</div>
-          <div style="font-size:12px;color:var(--ink3)">${fecha}</div>
+        <a href="usuario.html?id=${userId}" style="text-decoration:none;flex-shrink:0">${avatarHTML}</a>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <a href="usuario.html?id=${userId}" style="font-size:14px;font-weight:700;color:var(--ink);text-decoration:none" onmouseover="this.style.color='var(--brand)'" onmouseout="this.style.color='var(--ink)'">${nombre}</a>
+            ${verified ? '<span class="pill pill-green" style="font-size:10px">✅ Verificado</span>' : ''}
+            <span style="font-size:10px;color:var(--ink3);background:var(--surface2);padding:2px 6px;border-radius:8px">Nv.${nivel}</span>
+          </div>
+          <div style="font-size:12px;color:var(--ink3)">${handle ? handle + ' · ' : ''}${fecha}</div>
         </div>
-        <div style="color:var(--brand)">${'★'.repeat(r.rating)}</div>
+        <div style="color:var(--brand);font-size:16px;flex-shrink:0">${'★'.repeat(r.rating)}</div>
       </div>
       <p class="rtxt">${r.text}</p>
+      ${verified ? `<div style="margin-bottom:10px;cursor:pointer" onclick="window.open('${r.receipt_url}','_blank')">
+        <img src="${r.receipt_url}" alt="Boleta" style="width:100%;max-height:90px;object-fit:cover;border-radius:var(--rsm);border:1px solid var(--green);opacity:.85">
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">🧾 Ver boleta →</div>
+      </div>` : ''}
       ${resto ? `<a class="resto-tag" href="restaurante.html?id=${resto.id}">${resto.icon||'🍽️'} ${resto.name}</a>` : ''}
       <div class="ract" style="margin-top:10px">
-        <button class="btnh">👍 Útil (${r.useful_count||0})</button>
-        <button class="btnh" onclick="navigator.clipboard?.writeText(location.href);alert('Link copiado')">Compartir</button>
+        <button class="btnh" onclick="markUseful(this,'${r.id}',${r.useful_count||0})">👍 Útil (${r.useful_count||0})</button>
+        ${resto ? `<a class="btnh" href="restaurante.html?id=${resto.id}" style="text-decoration:none">💬 Ver reseña</a>` : ''}
+        ${userId ? `<a class="btnh" href="usuario.html?id=${userId}" style="text-decoration:none">👤 Ver perfil</a>` : ''}
       </div>
     </div>`;
   }).join('');
