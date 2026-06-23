@@ -55,6 +55,26 @@
 .sp.lit { filter:none;opacity:1;transform:scale(1.1); }
 .bar-track { flex:1;height:6px;background:var(--surface3);border-radius:4px;overflow:hidden; }
 .bar-fill  { height:100%;background:var(--brand);border-radius:4px; }
+
+/* Carta */
+.menu-section-block { margin-bottom:24px; }
+.menu-section-title {
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:700;
+  color:var(--ink);margin-bottom:12px;padding-bottom:8px;
+  border-bottom:2px solid var(--brand);display:flex;align-items:center;gap:8px;
+}
+.menu-item {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--border);gap:12px;
+}
+.menu-item:last-child { border-bottom:none; }
+.menu-item-info { flex:1; }
+.menu-item-name { font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;display:flex;align-items:center;gap:6px; }
+.menu-item-badges { display:flex;gap:4px;flex-wrap:wrap;margin-top:4px; }
+.menu-item-price {
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  color:var(--brand);flex-shrink:0;white-space:nowrap;
+}
 </style>
 </head>
 <body>
@@ -121,11 +141,31 @@
         <button class="btn btn-primary btn-full" id="btn-review" onclick="window._submitReview()">Publicar reseña</button>
       </div>
 
-      <div class="sechdr" style="margin-top:4px">
-        <h2>Reseñas</h2>
-        <span id="rev-count" style="font-size:13px;color:var(--ink3)"></span>
+      <!-- Tabs Carta / Reseñas -->
+      <div style="display:flex;gap:0;background:var(--surface2);border-radius:var(--rsm);padding:4px;margin-bottom:20px">
+        <button id="tab-menu" onclick="switchTab('menu')"
+          style="flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:var(--brand);color:#fff;transition:all .2s">
+          🍽️ Carta
+        </button>
+        <button id="tab-reviews" onclick="switchTab('reviews')"
+          style="flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:transparent;color:var(--ink3);transition:all .2s">
+          ⭐ Reseñas
+        </button>
       </div>
-      <div class="rev-grid" id="rev-grid"><div style="color:var(--ink3);text-align:center;padding:20px">Cargando reseñas…</div></div>
+
+      <!-- CARTA -->
+      <div id="menu-section">
+        <div id="menu-grid"><div style="display:flex;justify-content:center;padding:32px"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- RESEÑAS -->
+      <div id="reviews-section" style="display:none">
+        <div class="sechdr">
+          <h2>Reseñas</h2>
+          <span id="rev-count" style="font-size:13px;color:var(--ink3)"></span>
+        </div>
+        <div class="rev-grid" id="rev-grid"><div style="color:var(--ink3);text-align:center;padding:20px">Cargando reseñas…</div></div>
+      </div>
     </div>
 
     <div>
@@ -167,6 +207,55 @@ if (!session) { location.href='login.html'; }
 let resto = null;
 let selectedStars = 0;
 let isFav = false;
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+window.switchTab = (tab) => {
+  const isMenu = tab === 'menu';
+  document.getElementById('menu-section').style.display    = isMenu ? 'block' : 'none';
+  document.getElementById('reviews-section').style.display = isMenu ? 'none' : 'block';
+  document.getElementById('tab-menu').style.background    = isMenu ? 'var(--brand)' : 'transparent';
+  document.getElementById('tab-menu').style.color         = isMenu ? '#fff' : 'var(--ink3)';
+  document.getElementById('tab-reviews').style.background = isMenu ? 'transparent' : 'var(--brand)';
+  document.getElementById('tab-reviews').style.color      = isMenu ? 'var(--ink3)' : '#fff';
+  if (!isMenu && document.getElementById('rev-grid').children.length <= 1) loadReviews();
+};
+
+// ── Cargar carta ──────────────────────────────────────────────────────────────
+async function loadMenu() {
+  const { data: sections } = await sb
+    .from('menu_sections')
+    .select('*, menu_items(*)')
+    .eq('restaurant_id', rid)
+    .order('order_index');
+
+  const grid = document.getElementById('menu-grid');
+  if (!sections?.length) {
+    grid.innerHTML = '<p style="color:var(--ink3);text-align:center;padding:32px">Este restaurante aún no ha cargado su carta.</p>';
+    return;
+  }
+
+  grid.innerHTML = sections.map(sec => {
+    const items = (sec.menu_items || []).sort((a,b) => a.order_index - b.order_index);
+    return `
+    <div class="menu-section-block">
+      <div class="menu-section-title">${sec.name}</div>
+      ${items.map(item => `
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-name">
+            ${item.name}
+            ${item.is_popular ? '<span class="pill pill-brand" style="font-size:9px">🔥 Popular</span>' : ''}
+          </div>
+          <div class="menu-item-badges">
+            ${item.is_vegan       ? '<span class="pill pill-green" style="font-size:9px">🌱 Vegano</span>'      : ''}
+            ${item.is_vegetarian  ? '<span class="pill" style="font-size:9px;background:var(--green-bg);color:var(--green)">🥦 Vegetariano</span>' : ''}
+          </div>
+        </div>
+        <div class="menu-item-price">$${item.price.toLocaleString('es-CL')}</div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
 
 // ── Cargar restaurante ────────────────────────────────────────────────────────
 async function loadResto() {
@@ -417,6 +506,7 @@ function showToast(msg){
 }
 
 loadResto();
+loadMenu();
 </script>
 </body>
 </html>
