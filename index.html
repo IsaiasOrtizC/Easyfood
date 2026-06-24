@@ -327,7 +327,7 @@ Recomienda 3 restaurantes. Responde SOLO JSON sin markdown:
       })
     });
     const data = await resp.json();
-    const recs = JSON.parse(data.content?.[0]?.text?.replace(/\`\`\`json|\`\`\`/g,'').trim()||'[]');
+    const recs = JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim()||'[]');
 
     if (!recs.length) return;
 
