@@ -88,6 +88,13 @@
     <div class="sechdr"><h2>Explorar por zona</h2></div>
     <div class="comunas-strip" id="comunas-row"></div>
 
+    <!-- Para ti / Recomendaciones IA -->
+    <div class="sechdr" id="parati-header" style="display:none">
+      <h2>✨ Recomendado para ti</h2>
+      <a href="parati.html">Ver todo →</a>
+    </div>
+    <div id="parati-grid" style="display:none;margin-bottom:28px"></div>
+
     <div class="sechdr">
       <h2 id="restos-title">Destacados en Santiago</h2>
       <a href="#" onclick="resetFilters()">Ver todos →</a>
@@ -261,12 +268,105 @@ window.onSearch = () => {
 
 window.resetFilters = () => { currentCat='all'; currentComuna='all'; renderCats(); renderComunas(); loadRestos(); };
 
+// ── Para ti — recomendaciones IA en el inicio ────────────────────────────────
+async function loadParaTi() {
+  try {
+    // Datos del usuario
+    const [
+      { data: profile },
+      { data: reviews },
+      { data: favorites },
+    ] = await Promise.all([
+      sb.from('profiles').select('*').eq('id', session.user.id).single(),
+      sb.from('reviews').select('*,restaurants(name,categories(slug,name))').eq('user_id', session.user.id).limit(15),
+      sb.from('favorites').select('restaurant_id').eq('user_id', session.user.id),
+    ]);
+
+    // Restaurantes con score
+    const { data: restos } = await sb.from('restaurant_scores')
+      .select('*').order('score', { ascending: false }).limit(20);
+
+    if (!restos?.length) return;
+
+    const reviewedIds = (reviews||[]).map(r => r.restaurant_id);
+    const favIds = (favorites||[]).map(f => f.restaurant_id);
+    const catCount = {};
+    (reviews||[]).forEach(r => {
+      const slug = r.restaurants?.categories?.slug;
+      if (slug) catCount[slug] = (catCount[slug]||0) + 1;
+    });
+    const topCats = Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k])=>k);
+    const avgRating = reviews?.length ? (reviews.reduce((a,r)=>a+r.rating,0)/reviews.length).toFixed(1) : null;
+
+    const candidates = restos.filter(r => !reviewedIds.includes(r.id) && !favIds.includes(r.id)).slice(0,10);
+    if (!candidates.length) return;
+
+    // Llamar a Claude
+    const userProfile = `Usuario: ${profile?.name||'Usuario'}
+Categorías favoritas: ${topCats.join(', ')||'sin datos'}
+Rating promedio que da: ${avgRating||'sin reseñas'}
+Reseñas escritas: ${reviews?.length||0}`;
+    const restoList = candidates.map(r => `- ${r.name} (${r.category_name}, ${r.comuna_name}, ★${r.real_avg_rating||r.avg_rating}, score:${r.score})`).join('
+');
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:600,
+        messages:[{role:'user', content:`Eres el motor de recomendaciones de EasyFood Santiago.
+
+Perfil:
+${userProfile}
+
+Restaurantes disponibles:
+${restoList}
+
+Recomienda 3 restaurantes. Responde SOLO JSON sin markdown:
+[{"id":"id_exacto","nombre":"nombre","match":85,"razon":"Por qué en 1 frase"}]`}]
+      })
+    });
+    const data = await resp.json();
+    const recs = JSON.parse(data.content?.[0]?.text?.replace(/\`\`\`json|\`\`\`/g,'').trim()||'[]');
+
+    if (!recs.length) return;
+
+    const SVG_MAP = {burger:'Hamburger-bro.svg',pizza:'Pizza_sharing-bro.svg',ramen:'Ramen-amico.svg',sushi:'Poke_bowl-rafiki.svg',seafood:'Poke_bowl-rafiki.svg',healthy:'fruit_salad-pana.svg',chilena:'moai-chile.svg',coffee:'fruit_salad-pana.svg',parrilla:'food-meat.svg',bar:'moai-chile.svg'};
+
+    const grid = document.getElementById('parati-grid');
+    grid.innerHTML = `<div class="parati-scroll">${recs.map(rec => {
+      const r = restos.find(x => x.id === rec.id || x.name === rec.nombre);
+      if (!r) return '';
+      const svg = SVG_MAP[r.category_slug]||'moai-chile.svg';
+      return `<a class="pt-card" href="restaurante.html?id=${r.id}">
+        <div class="pt-card-top">
+          <div class="pt-ico"><img src="${svg}" alt="${r.name}"></div>
+          <div>
+            <div class="pt-name">${r.name}</div>
+            <div class="pt-meta">${r.category_name} · ${r.comuna_name} · ★${r.real_avg_rating||r.avg_rating||'—'}</div>
+          </div>
+        </div>
+        <div class="pt-match"><span>Compatibilidad</span><span>${rec.match}%</span></div>
+        <div class="pt-bar"><div class="pt-fill" style="width:${rec.match}%"></div></div>
+        <div class="pt-why">${rec.razon}</div>
+      </a>`;
+    }).join('')}</div>`;
+
+    document.getElementById('parati-header').style.display = 'flex';
+    document.getElementById('parati-grid').style.display = 'block';
+
+  } catch(e) {
+    console.log('Para ti no disponible:', e);
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 await loadCategoryMap();
 renderCats();
 renderComunas();
 loadRestos();
 loadStats();
+loadParaTi();
 </script>
 </body>
 </html>
